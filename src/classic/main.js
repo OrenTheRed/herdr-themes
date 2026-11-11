@@ -2,7 +2,7 @@
 
 import { View, div, image, svg } from "gpui-kit";
 import { v_flex, h_flex } from "gpui-base";
-import { SQUAD, ASSET, MOD, C, K, W, LIST_TITLE } from "./team.js";
+import { SQUAD, ASSET, MOD, C, K, GK, W, LIST_TITLE } from "./team.js";
 import { agents, terminals, panes, focused, spaces, run, theme, shared, setShared, setAgentOrder, openOverlay, closeOverlay, props, window, layout } from "herdr";
 
 function find(node, id) {
@@ -72,13 +72,14 @@ function duration(ms) {
 
 // Every agent is a player of the team in ./team.js (written by build.py).
 
-// A jersey with the shirt number on it. bob: the player jogs (working).
-function jersey(num, size, bob) {
+// A jersey with the shirt number on it; keepers wear their own kit. bob: the player jogs (working).
+function jersey(num, size, bob, gk) {
+  const kit = gk ? GK : K;
   const shirt = div().absolute().left(0).top(0).size(size)
-    .child(image(`${ASSET}/jersey.svg`).size(size))
-    .when(Boolean(K.numberBg), (el) => el.child(div().absolute().left(size * 0.25).top(size * 0.3).w(size * 0.5).h(size * 0.5).rounded(2).bg(K.numberBg ?? "#0000")))
+    .child(image(`${ASSET}/jersey${gk ? "-gk" : ""}.svg`).size(size))
+    .when(Boolean(kit.numberBg), (el) => el.child(div().absolute().left(size * 0.25).top(size * 0.3).w(size * 0.5).h(size * 0.5).rounded(2).bg(kit.numberBg ?? "#0000")))
     .child(div().absolute().left(0).top(size * 0.28).w(size).text_center()
-      .text_size(size * 0.42).font_bold().text_color(K.number).child(String(num)));
+      .text_size(size * 0.42).font_bold().text_color(kit.number).child(String(num)));
   return div().relative().flex_none().w(size).h(size + 3)
     .child(bob ? shirt.loop("top", { from: 0, to: 3, period: 520 }) : shirt.top(1.5));
 }
@@ -337,8 +338,8 @@ export default class Agents extends View {
     }
 
     const row = (a, i, subs = []) => {
-      const [player, num] = this.player(a);
-      const pic = jersey(num, 18, a.status === "working");
+      const [player, num, role] = this.player(a);
+      const pic = jersey(num, 18, a.status === "working", role === "gk");
       const more = detail.get(a.address);
       // An agent on another machine (`vps/t7`) says which.
       const machine = a.address.includes("/") ? a.address.split("/")[0] : null;

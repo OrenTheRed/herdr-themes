@@ -1,14 +1,73 @@
 {
   "id": "juventus",
+  "code": "JUV",
   "name": "Juventus",
   "short": "JUV",
   "listTitle": "Bianconeri",
   "stadium": "Allianz Stadium",
   "squadNote": "club legends; numbers are lineup positions, not their real shirts",
   "squad": [
-    ["Buffon", 1], ["Zambrotta", 2], ["Chiellini", 3], ["Scirea", 4], ["Cabrini", 5],
-    ["Pirlo", 6], ["Nedved", 7], ["Zidane", 8], ["Trezeguet", 9], ["Del Piero", 10],
-    ["Platini", 11], ["Baggio", 12], ["Bonucci", 13], ["Dybala", 14], ["Sivori", 15]
+    [
+      "Buffon",
+      1,
+      "gk"
+    ],
+    [
+      "Zambrotta",
+      2
+    ],
+    [
+      "Chiellini",
+      3
+    ],
+    [
+      "Scirea",
+      4
+    ],
+    [
+      "Cabrini",
+      5
+    ],
+    [
+      "Pirlo",
+      6
+    ],
+    [
+      "Nedved",
+      7
+    ],
+    [
+      "Zidane",
+      8
+    ],
+    [
+      "Trezeguet",
+      9
+    ],
+    [
+      "Del Piero",
+      10
+    ],
+    [
+      "Platini",
+      11
+    ],
+    [
+      "Baggio",
+      12
+    ],
+    [
+      "Bonucci",
+      13
+    ],
+    [
+      "Dybala",
+      14
+    ],
+    [
+      "Sivori",
+      15
+    ]
   ],
   "colors": {
     "primary": "#F2F2F2",
@@ -19,7 +78,28 @@
     "selection": "#3A3A3A",
     "foreground": "#F5F5F5"
   },
-  "kit": { "style": "stripes", "a": "#111111", "b": "#FFFFFF", "collar": "#D4AF37", "shorts": "#FFFFFF", "number": "#111111", "numberBg": "#FFFFFFD9" },
-  "crowd": ["#FFFFFF", "#111111", "#D4AF37"],
+  "kit": {
+    "style": "stripes",
+    "a": "#111111",
+    "b": "#FFFFFF",
+    "collar": "#D4AF37",
+    "shorts": "#FFFFFF",
+    "number": "#111111",
+    "numberBg": "#FFFFFFD9"
+  },
+  "gkKit": {
+    "style": "plain",
+    "a": "#F2C200",
+    "b": "#F2C200",
+    "collar": "#111111",
+    "shorts": "#111111",
+    "number": "#111111",
+    "numberBg": null
+  },
+  "crowd": [
+    "#FFFFFF",
+    "#111111",
+    "#D4AF37"
+  ],
   "words": "it"
 }

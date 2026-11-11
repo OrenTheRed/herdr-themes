@@ -1,14 +1,18 @@
 {
   "id": "albiceleste",
+  "code": "albiceleste",
   "name": "Argentina",
   "short": "ARG",
   "listTitle": "La Scaloneta",
-  "stadium": "El Monumental",
-  "squadNote": "2022 World Cup squad, shirt numbers from that tournament (from memory, not checked against a source)",
+  "stadium": "Estadio Libertadores de America",
+  "squadNote": "2026 World Cup squad and shirt numbers, from https://mundoalbiceleste.com/2026/05/28/argentina-national-team-shirt-numbers-announced-for-world-cup-lionel-messi-to-wear-10-for-record-time/",
   "squad": [
-    ["Messi", 10], ["Dibu", 23], ["Di Maria", 11], ["Julian", 9], ["Enzo", 24],
-    ["Mac Allister", 20], ["De Paul", 7], ["Cuti", 13], ["Otamendi", 19], ["Lautaro", 22],
-    ["Molina", 26], ["Tagliafico", 3], ["Lisandro", 25], ["Paredes", 5], ["Acuna", 8]
+    ["Messi", 10], ["Dibu", 23, "gk"], ["Julian", 9], ["Enzo", 24], ["Mac Allister", 20],
+    ["De Paul", 7], ["Lautaro", 22], ["Cuti", 13], ["Otamendi", 19], ["Lisandro", 6],
+    ["Molina", 26], ["Tagliafico", 3], ["Paredes", 5], ["Lo Celso", 11], ["Nico Paz", 18],
+    ["Almada", 16], ["G. Simeone", 17], ["Barco", 8], ["Palacios", 14], ["N. Gonzalez", 15],
+    ["Montiel", 4], ["Balerdi", 2], ["Medina", 25], ["J. M. Lopez", 21], ["Musso", 1, "gk"],
+    ["Rulli", 12, "gk"]
   ],
   "colors": {
     "primary": "#75AADB",
@@ -20,6 +24,7 @@
     "foreground": "#F2F7FC"
   },
   "kit": { "style": "stripes", "a": "#75AADB", "b": "#FFFFFF", "collar": "#F6B40E", "shorts": "#14213D", "number": "#0B1E2D", "numberBg": null },
+  "gkKit": { "style": "plain", "a": "#D7141A", "b": "#D7141A", "collar": "#111111", "shorts": "#D7141A", "number": "#FFFFFF", "numberBg": null },
   "crowd": ["#75AADB", "#FFFFFF", "#F6B40E"],
   "words": "es"
 }

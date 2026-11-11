@@ -24,18 +24,21 @@ WORDS = {
         "onPitch": "jugadores en la cancha", "workingCount": "atacando",
         "blockedCount": "en el VAR", "doneCount": "goles", "bench": "EL BANCO",
         "matchday": "FECHA", "shout": "GOOOL!",
+        "onBall": "con la pelota", "spaces": "PARTIDOS", "space": "partido", "tab": "tiempo", "player": "jugador",
     },
     "it": {
         "working": "in attacco", "blocked": "VAR", "done": "GOL", "idle": "in panchina",
         "onPitch": "giocatori in campo", "workingCount": "in attacco",
         "blockedCount": "al VAR", "doneCount": "gol", "bench": "LA PANCHINA",
         "matchday": "GIORNATA", "shout": "GOOOL!",
+        "onBall": "in possesso", "spaces": "PARTITE", "space": "partita", "tab": "tempo", "player": "giocatore",
     },
     "en": {
         "working": "attacking", "blocked": "VAR", "done": "GOAL", "idle": "on the bench",
         "onPitch": "players on the pitch", "workingCount": "attacking",
         "blockedCount": "at VAR", "doneCount": "goals", "bench": "THE BENCH",
         "matchday": "MATCHDAY", "shout": "GOOAAL!",
+        "onBall": "on the ball", "spaces": "MATCHES", "space": "match", "tab": "half", "player": "player",
     },
 }
 
@@ -76,6 +79,18 @@ BALL_SVG = (
     '<circle cx="10" cy="10" r="9" fill="#FFFFFF" stroke="#111111" stroke-width="1.2"/>'
     '<polygon points="10,6 13.4,8.5 12.1,12.5 7.9,12.5 6.6,8.5" fill="#111111"/>'
     '<path d="M10 6 L10 1.2 M13.4 8.5 L18.3 7.2 M12.1 12.5 L15 16.6 M7.9 12.5 L5 16.6 M6.6 8.5 L1.7 7.2" stroke="#111111" stroke-width="1.1"/>'
+    "</svg>"
+)
+
+
+# A floodlight beam for the player whose terminals are on the bench: soft cone, bright pool.
+SPOTLIGHT_SVG = (
+    '<svg xmlns="http://www.w3.org/2000/svg" width="140" height="220" viewBox="0 0 140 220">'
+    '<defs><linearGradient id="beam" x2="0" y2="1"><stop stop-color="#FFF6C8" stop-opacity="0"/>'
+    '<stop offset=".55" stop-color="#FFF6C8" stop-opacity=".22"/><stop offset="1" stop-color="#FFF6C8" stop-opacity=".42"/></linearGradient>'
+    '<radialGradient id="pool"><stop stop-color="#FFF6C8" stop-opacity=".75"/><stop offset="1" stop-color="#FFF6C8" stop-opacity="0"/></radialGradient></defs>'
+    '<path d="M58 0 H82 L136 200 H4 Z" fill="url(#beam)"/>'
+    '<ellipse cx="70" cy="202" rx="66" ry="16" fill="url(#pool)"/>'
     "</svg>"
 )
 
@@ -143,10 +158,18 @@ def pitch_svg(team):
     # stars
     for _ in range(40):
         o.append(f'<circle cx="{rnd.randint(0, W)}" cy="{rnd.randint(0, 50)}" r="{rnd.choice((0.8, 1, 1.3))}" fill="#fff" opacity="{rnd.uniform(.3, .8):.2f}"/>')
-    # stands: three tiers
-    o.append(f'<path d="M0 62 L{W} 62 L{W} 205 L0 205 Z" fill="#1b2233"/>')
-    for y in (62, 110, 158):
-        o.append(f'<rect x="0" y="{y}" width="{W}" height="4" fill="#2c3550"/>')
+    # roof and stands in the club's colors: a dark roof trimmed in the primary color,
+    # seat rows striped in the kit colors behind the fans, tier walls in the primary color.
+    o.append(f'<rect x="0" y="44" width="{W}" height="18" fill="{c["dark"]}"/>')
+    o.append(f'<rect x="0" y="58" width="{W}" height="4" fill="{c["primary"]}"/>')
+    for x in range(0, W, 40):
+        o.append(f'<rect x="{x + 18}" y="44" width="4" height="14" fill="{c["surface"]}"/>')
+    o.append(f'<path d="M0 62 L{W} 62 L{W} 205 L0 205 Z" fill="{c["surface"]}"/>')
+    for row in range(14):
+        col = k["a"] if row % 2 == 0 else k["b"]
+        o.append(f'<rect x="0" y="{66 + row * 9.6:.1f}" width="{W}" height="5" fill="{col}" opacity=".28"/>')
+    for y in (110, 158):
+        o.append(f'<rect x="0" y="{y}" width="{W}" height="4" fill="{c["primary"]}" opacity=".85"/>')
     # fans
     crowd = team["crowd"]
     for row in range(14):
@@ -165,7 +188,7 @@ def pitch_svg(team):
         o.append(f'<defs><clipPath id="f{fx}"><rect width="90" height="42" rx="3"/></clipPath></defs>')
     # floodlights
     for fx in (90, 540, 1060, 1510):
-        o.append(f'<rect x="{fx - 3}" y="8" width="6" height="56" fill="#3a4258"/>')
+        o.append(f'<rect x="{fx - 3}" y="8" width="6" height="40" fill="{c["surface"]}"/>')
         o.append(f'<rect x="{fx - 26}" y="2" width="52" height="16" rx="3" fill="#cfd6e6"/>')
         o.append(f'<circle cx="{fx}" cy="10" r="95" fill="url(#glow)"/>')
     # ad boards
@@ -272,11 +295,12 @@ def poster(team):
     cast = [("run", 300, 190, "working"), ("cheer", 520, 300, "done"), ("run", 760, 200, "working"),
             ("stand", 990, 300, "blocked"), ("run", 1220, 190, "working"), ("stand", 1420, 300, "idle")]
     for i, (pose, x, y, state) in enumerate(cast):
-        name, num = squad[i]
-        o.append(f'<svg x="{x}" y="{y}" width="64" height="96">{_inner(player_svg(k, pose))}</svg>')
-        if k.get("numberBg"):
-            o.append(f'<rect x="{x + 25}" y="{y + 31}" width="14" height="13" rx="2" fill="{k["numberBg"][:7]}"/>')
-        o.append(f'<text x="{x + 32}" y="{y + 41}" text-anchor="middle" {font} font-size="11" font-weight="800" fill="{k["number"]}">{num}</text>')
+        name, num = squad[i][0], squad[i][1]
+        kit = team["gkKit"] if "gk" in squad[i][2:] else k
+        o.append(f'<svg x="{x}" y="{y}" width="64" height="96">{_inner(player_svg(kit, pose))}</svg>')
+        if kit.get("numberBg"):
+            o.append(f'<rect x="{x + 25}" y="{y + 31}" width="14" height="13" rx="2" fill="{kit["numberBg"][:7]}"/>')
+        o.append(f'<text x="{x + 32}" y="{y + 41}" text-anchor="middle" {font} font-size="11" font-weight="800" fill="{kit["number"]}">{num}</text>')
         o.append(f'<rect x="{x + 32 - len(name) * 4 - 8}" y="{y + 98}" width="{len(name) * 8 + 16}" height="19" rx="9" fill="#000" opacity=".65"/>')
         o.append(f'<text x="{x + 32}" y="{y + 112}" text-anchor="middle" {font} font-size="12" font-weight="700" fill="#fff">{name}</text>')
         if state == "working":
@@ -294,9 +318,22 @@ def poster(team):
         o.append(f'<circle cx="{x + 16}" cy="39" r="4" fill="{col}"/>')
         o.append(f'<text x="{x + 28}" y="43" {font} font-size="12.5" font-weight="600" fill="#fff">{n} {label}</text>')
     # the bench: rail and two terminals
+    # navigation bar: spaces, then the shown space's tabs, then the player on the ball
+    pr = c["primary"].lstrip("#")
+    on_primary = c["dark"] if (0.299 * int(pr[0:2], 16) + 0.587 * int(pr[2:4], 16) + 0.114 * int(pr[4:6], 16)) > 150 else "#FFFFFF"
     o.append(f'<rect y="420" width="1600" height="29" fill="{c["surface"]}"/><rect y="420" width="1600" height="2" fill="{c["primary"]}"/>')
-    o.append(f'<text x="20" y="440" {font} font-size="13" font-weight="600" fill="{c["foreground"]}">website  /  pricing page</text>')
-    o.append(f'<text x="1580" y="440" text-anchor="end" {font} font-size="11" font-weight="600" fill="{c["primary"]}">{w["bench"]}</text>')
+    o.append(f'<text x="14" y="439" {font} font-size="10" font-weight="800" fill="{c["primary"]}">{w["spaces"]}</text>')
+    x = 14 + len(w["spaces"]) * 7.5 + 8
+    for label, active in (("website", True), ("api", False), ("›", None), ("pricing page", True), ("tests", False)):
+        if active is None:
+            o.append(f'<text x="{x}" y="440" {font} font-size="15" fill="{c["foreground"]}" opacity=".5">›</text>')
+            x += 16
+            continue
+        cw = len(label) * 7 + 20
+        o.append(f'<rect x="{x}" y="425" width="{cw}" height="20" rx="10" fill="{c["primary"] if active else "#FFFFFF"}" opacity="{1 if active else .1}"/>')
+        o.append(f'<text x="{x + cw / 2}" y="439" text-anchor="middle" {font} font-size="11.5" font-weight="{800 if active else 600}" fill="{on_primary if active else c["foreground"]}">{label}</text>')
+        x += cw + 6
+    o.append(f'<text x="1580" y="439" text-anchor="end" {font} font-size="12" font-weight="700" fill="{c["foreground"]}"><tspan fill="{c["accent"]}">▼</tspan> {squad[0][0]} · {w["onBall"]}</text>')
     for j, (title, state, lines, border) in enumerate((
             ("Claude Code", w["working"], ["&gt; Make the pricing page easier to scan.", "Edit src/pages/pricing.astro", "Working / checking accessibility"], c["primary"]),
             ("Codex", w["done"], ["&gt; Clean up the pricing card styles.", "Checks passed: 24 tests, no type errors.", "Done / pricing cards are ready"], c["surface"]))):
@@ -321,6 +358,7 @@ def team_js(team, mod):
         "MOD": mod,
         "C": team["colors"],
         "K": team["kit"],
+        "GK": team["gkKit"],
         "W": w,
         "LIST_TITLE": team["listTitle"],
         "STADIUM": team["stadium"],
@@ -362,22 +400,22 @@ def classic_layout(team):
                 walk(v)
 
     walk(layout)
-    layout["theme"] = team["id"]
-    layout["preview"] = f"layouts/{team['id']}.svg"
+    layout["theme"] = team["code"]
+    layout["preview"] = f"layouts/{team['code']}.svg"
     return layout
 
 
 def stadium_layout(team):
     c, mod = team["colors"], f"{team['id']}-stadium"
     return {
-        "id": f"{team['id']}-stadium-root", "type": "column", "titlebar": "none", "theme": team["id"],
-        "preview": f"layouts/{team['id']}-stadium.svg",
+        "id": f"{team['id']}-stadium-root", "type": "column", "titlebar": "none", "theme": team["code"],
+        "preview": f"layouts/{team['code']}-Stadium.svg",
         "traffic_lights": [12, 16], "font_size": 13, "ui_font": "Geist", "background": c["dark"],
         "colors": {"accent": c["primary"], "border": c["surface"]},
         "terminal_padding": [10, 12], "resizable": False,
         "children": [
             {"id": "stadium-field", "type": "block", "size": {"weight": 0.85}, "content": {"mod": mod}},
-            {"id": "stadium-rail", "type": "block", "size": {"px": 29}, "content": {"mod": mod, "props": {"role": "rail"}}},
+            {"id": "stadium-rail", "type": "block", "size": {"px": 44}, "content": {"mod": mod, "props": {"role": "rail"}}},
             {"id": "stadium-bench", "type": "block", "size": {"weight": 1}, "padding": [0, 10], "background": c["dark"],
              "content": {"tab": "active", "pane": {
                  "gap": 10, "radius": 4, "lone": True, "background": c["dark"],
@@ -394,7 +432,8 @@ def write(path, text):
 
 
 def build(team):
-    tid, k = team["id"], team["kit"]
+    """Mods keep the lowercase team id; layouts and themes use the short code the settings list shows."""
+    tid, code, k, gk = team["id"], team["code"], team["kit"], team["gkKit"]
     out = DIST / tid
     if out.exists():
         shutil.rmtree(out)
@@ -404,8 +443,9 @@ def build(team):
     write(m / "team.js", team_js(team, f"{tid}-agents"))
     write(m / "mod.json", {"place": "none", "title": team["listTitle"]})
     write(m / "jersey.svg", jersey_svg(k))
+    write(m / "jersey-gk.svg", jersey_svg(gk))
     write(m / "ball.svg", BALL_SVG)
-    write(out / "layouts" / f"{tid}.json", classic_layout(team))
+    write(out / "layouts" / f"{code}.json", classic_layout(team))
     # stadium
     s = out / "mods" / f"{tid}-stadium"
     write(s / "main.js", (ROOT / "src/stadium/main.js").read_text())
@@ -414,12 +454,14 @@ def build(team):
     write(s / "pitch.svg", pitch_svg(team))
     for pose in ("stand", "run", "cheer"):
         write(s / f"{pose}.svg", player_svg(k, pose))
+        write(s / f"{pose}-gk.svg", player_svg(gk, pose))
     write(s / "ball.svg", BALL_SVG)
-    write(out / "layouts" / f"{tid}-stadium.json", stadium_layout(team))
-    write(out / "layouts" / f"{tid}.svg", preview_classic(team))
-    write(out / "layouts" / f"{tid}-stadium.svg", preview_stadium(team))
+    write(s / "spotlight.svg", SPOTLIGHT_SVG)
+    write(out / "layouts" / f"{code}-Stadium.json", stadium_layout(team))
+    write(out / "layouts" / f"{code}.svg", preview_classic(team))
+    write(out / "layouts" / f"{code}-Stadium.svg", preview_stadium(team))
     # shared colors
-    write(out / "themes" / f"{tid}.json", theme_json(team))
+    write(out / "themes" / f"{code}.json", theme_json(team))
     # README pictures (not installed)
     write(ROOT / "previews" / f"{tid}-stadium.svg", poster(team))
     write(ROOT / "previews" / f"{tid}.svg", preview_classic(team))

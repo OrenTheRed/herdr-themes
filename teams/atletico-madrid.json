@@ -1,14 +1,73 @@
 {
   "id": "atletico-madrid",
+  "code": "ATM",
   "name": "Atletico Madrid",
   "short": "ATM",
   "listTitle": "Los Colchoneros",
   "stadium": "Metropolitano",
   "squadNote": "club legends; numbers are lineup positions, not their real shirts",
   "squad": [
-    ["Oblak", 1], ["Juanfran", 2], ["Godin", 3], ["Miranda", 4], ["Filipe Luis", 5],
-    ["Gabi", 6], ["Koke", 7], ["Simeone", 8], ["Torres", 9], ["Griezmann", 10],
-    ["Arda", 11], ["Aguero", 12], ["Forlan", 13], ["Luis Aragones", 14], ["Diego Costa", 15]
+    [
+      "Oblak",
+      1,
+      "gk"
+    ],
+    [
+      "Juanfran",
+      2
+    ],
+    [
+      "Godin",
+      3
+    ],
+    [
+      "Miranda",
+      4
+    ],
+    [
+      "Filipe Luis",
+      5
+    ],
+    [
+      "Gabi",
+      6
+    ],
+    [
+      "Koke",
+      7
+    ],
+    [
+      "Simeone",
+      8
+    ],
+    [
+      "Torres",
+      9
+    ],
+    [
+      "Griezmann",
+      10
+    ],
+    [
+      "Arda",
+      11
+    ],
+    [
+      "Aguero",
+      12
+    ],
+    [
+      "Forlan",
+      13
+    ],
+    [
+      "Luis Aragones",
+      14
+    ],
+    [
+      "Diego Costa",
+      15
+    ]
   ],
   "colors": {
     "primary": "#E03A3E",
@@ -19,7 +78,28 @@
     "selection": "#3A4280",
     "foreground": "#F4F5FA"
   },
-  "kit": { "style": "stripes", "a": "#CB3524", "b": "#FFFFFF", "collar": "#272E61", "shorts": "#272E61", "number": "#272E61", "numberBg": "#FFFFFFD9" },
-  "crowd": ["#CB3524", "#FFFFFF", "#272E61"],
+  "kit": {
+    "style": "stripes",
+    "a": "#CB3524",
+    "b": "#FFFFFF",
+    "collar": "#272E61",
+    "shorts": "#272E61",
+    "number": "#272E61",
+    "numberBg": "#FFFFFFD9"
+  },
+  "gkKit": {
+    "style": "plain",
+    "a": "#1A9E55",
+    "b": "#1A9E55",
+    "collar": "#FFFFFF",
+    "shorts": "#1A9E55",
+    "number": "#FFFFFF",
+    "numberBg": null
+  },
+  "crowd": [
+    "#CB3524",
+    "#FFFFFF",
+    "#272E61"
+  ],
   "words": "es"
 }

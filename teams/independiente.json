@@ -1,14 +1,73 @@
 {
   "id": "independiente",
+  "code": "CAI",
   "name": "Independiente",
   "short": "CAI",
   "listTitle": "El Rojo",
-  "stadium": "Libertadores de America",
+  "stadium": "Estadio Libertadores de America",
   "squadNote": "club legends; numbers are lineup positions, not their real shirts",
   "squad": [
-    ["Santoro", 1], ["Clausen", 2], ["Pavoni", 3], ["Trossero", 4], ["G. Milito", 5],
-    ["Pastoriza", 6], ["Bertoni", 7], ["Burruchaga", 8], ["Erico", 9], ["Bochini", 10],
-    ["Aguero", 11], ["Forlan", 12], ["Garnero", 13], ["Rolfi", 14], ["Usuriaga", 15]
+    [
+      "Santoro",
+      1,
+      "gk"
+    ],
+    [
+      "Clausen",
+      2
+    ],
+    [
+      "Pavoni",
+      3
+    ],
+    [
+      "Trossero",
+      4
+    ],
+    [
+      "G. Milito",
+      5
+    ],
+    [
+      "Pastoriza",
+      6
+    ],
+    [
+      "Bertoni",
+      7
+    ],
+    [
+      "Burruchaga",
+      8
+    ],
+    [
+      "Erico",
+      9
+    ],
+    [
+      "Bochini",
+      10
+    ],
+    [
+      "Aguero",
+      11
+    ],
+    [
+      "Forlan",
+      12
+    ],
+    [
+      "Garnero",
+      13
+    ],
+    [
+      "Rolfi",
+      14
+    ],
+    [
+      "Usuriaga",
+      15
+    ]
   ],
   "colors": {
     "primary": "#E2001A",
@@ -19,7 +78,28 @@
     "selection": "#5C1720",
     "foreground": "#FBF3F3"
   },
-  "kit": { "style": "plain", "a": "#E2001A", "b": "#E2001A", "collar": "#FFFFFF", "shorts": "#1E2A5A", "number": "#FFFFFF", "numberBg": null },
-  "crowd": ["#E2001A", "#FFFFFF", "#E2001A"],
+  "kit": {
+    "style": "plain",
+    "a": "#E2001A",
+    "b": "#E2001A",
+    "collar": "#FFFFFF",
+    "shorts": "#1E2A5A",
+    "number": "#FFFFFF",
+    "numberBg": null
+  },
+  "gkKit": {
+    "style": "plain",
+    "a": "#1C1C1C",
+    "b": "#1C1C1C",
+    "collar": "#E2001A",
+    "shorts": "#1C1C1C",
+    "number": "#FFFFFF",
+    "numberBg": null
+  },
+  "crowd": [
+    "#E2001A",
+    "#FFFFFF",
+    "#E2001A"
+  ],
   "words": "es"
 }
