@@ -1,0 +1,30 @@
+herdr-themes
+Copyright 2026 OrenTheRed
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This project includes code derived from the Herdr desktop app
+(https://github.com/herdrdev/herdr-app), licensed under the Apache License,
+Version 2.0. Changed files:
+
+- src/classic/main.js: modified from Herdr's built-in "agents" mod
+  (herdr-app 0.1.15). Changes: agents shown as team players with jerseys,
+  shirt numbers and keeper kits; working, blocked and done states drawn as
+  football animations and words; team colors and list title from team.js.
+- src/classic/layout.json: Herdr's "main" layout (herdr-app 0.1.15), with the
+  agents block pointed at the team's agents mod and the team theme set by
+  build.py.
+
+The generated copies of these files in each team folder
+(*/mods/*-agents/main.js and */layouts/<CODE>.json) carry the same changes.
+
+The stadium layout's three-band design (field, rail, terminals below) is
+inspired by the "pasture" example in https://github.com/herdrdev/herdr-layout-examples
+(Apache License, Version 2.0). Its code is original to this project.
+
+Unofficial fan project. Not affiliated with, endorsed by or sponsored by the
+Argentine Football Association (AFA), FIFA, Juventus FC, Club Atletico de
+Madrid, Club Atletico Independiente or Hapoel Tel Aviv FC. Club, team, stadium
+and player names identify them only; no crests, logos or official kit artwork
+are included. Squad lists and shirt numbers are public facts, sourced as noted
+in each team's RECIPE.md.

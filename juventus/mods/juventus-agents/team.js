@@ -1,0 +1,12 @@
+// Written by build.py from teams/juventus.json (2016-17 season squad and shirt numbers, from Wikipedia '2016-17 Juventus FC season' (https://en.wikipedia.org/w/index.php?oldid=1383808656)). Edit the team file, not this.
+export const SQUAD = [["Dybala", 21], ["Buffon", 1, "gk"], ["Higuaín", 9], ["Pjanić", 5], ["Bonucci", 19], ["Chiellini", 3], ["Dani Alves", 23], ["Mandžukić", 17], ["Khedira", 6], ["Marchisio", 8], ["Barzagli", 15], ["Alex Sandro", 12], ["Cuadrado", 7], ["Lichtsteiner", 26], ["Pjaca", 20], ["Rugani", 24], ["Asamoah", 22], ["Benatia", 4], ["Sturaro", 27], ["Rincón", 28], ["Lemina", 18], ["Kean", 34], ["Mandragora", 38], ["Hernanes", 11], ["Evra", 33], ["Neto", 25, "gk"], ["Audero", 32, "gk"]];
+export const ASSET = "mods/juventus-agents";
+export const MOD = "juventus-agents";
+export const C = {"primary": "#F2F2F2", "light": "#FFFFFF", "accent": "#D4AF37", "dark": "#0D0D0D", "surface": "#262626", "selection": "#3A3A3A", "foreground": "#F5F5F5"};
+export const K = {"style": "stripes", "a": "#111111", "b": "#FFFFFF", "collar": "#D4AF37", "shorts": "#FFFFFF", "number": "#111111", "numberBg": "#FFFFFFD9"};
+export const GK = {"style": "plain", "a": "#F2C200", "b": "#F2C200", "collar": "#111111", "shorts": "#111111", "number": "#111111", "numberBg": null};
+export const W = {"working": "in attacco", "blocked": "VAR", "done": "GOL", "idle": "in panchina", "onPitch": "giocatori in campo", "workingCount": "in attacco", "blockedCount": "al VAR", "doneCount": "gol", "bench": "LA PANCHINA", "matchday": "GIORNATA", "shout": "GOOOL!", "onBall": "in possesso", "spaces": "PARTITE", "space": "partita", "tab": "tempo", "player": "giocatore"};
+export const LIST_TITLE = "Bianconeri";
+export const STADIUM = "Allianz Stadium";
+export const SHORT = "JUV";
+export const NAME = "Juventus";

@@ -1,3 +1,8 @@
+// Modified from Herdr's built-in "agents" mod (herdr-app 0.1.15, Apache License 2.0;
+// https://github.com/herdrdev/herdr-app). Changed by herdr-themes: agents shown as team
+// players (jerseys, shirt numbers, keeper kits), football status animations and words, and
+// team colors from ./team.js. See NOTICE.
+//
 // Agents in grouped or priority views; parents take their most urgent sub-agent's place.
 
 import { View, div, image, svg } from "gpui-kit";
@@ -108,7 +113,11 @@ export default class Agents extends View {
   pick(list) {
     const live = new Set(list.map((a) => a.address));
     let dirty = false;
-    for (const k of Object.keys(this.players)) if (!live.has(k) && list.length) { delete this.players[k]; dirty = true; }
+    for (const [k, i] of Object.entries(this.players)) {
+      // Gone agents, and shirts a shorter or edited squad no longer has, are given back.
+      const valid = Number.isInteger(i) && i >= 0 && i < SQUAD.length;
+      if (!valid || (!live.has(k) && list.length)) { delete this.players[k]; dirty = true; }
+    }
     const taken = new Set(Object.values(this.players));
     for (const a of list) {
       if (this.players[a.address] != null) continue;
@@ -122,7 +131,7 @@ export default class Agents extends View {
   }
 
   player(a) {
-    return SQUAD[this.players[a.address] ?? 0];
+    return SQUAD[(this.players[a.address] ?? 0) % SQUAD.length];
   }
 
   // Stamps agents whose state changed. Done and idle count as one: looking at a

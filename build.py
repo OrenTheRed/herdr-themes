@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """Build Herdr app themes for every team in teams/*.json.
 
-Each team gets two looks, written to dist/<id>/ in the same shape as
-~/.config/herdr-app (layouts/, themes/, mods/):
+Each team gets a folder at the repo root, laid out like ~/.config/herdr-app (the
+convention of herdrdev/herdr-layout-examples), with two looks:
 
-  classic  layouts/<id>.json          the normal Herdr layout, agents as players
-  stadium  layouts/<id>-stadium.json  a full pitch on top, terminals below
+  <folder>/
+  ├── RECIPE.md                      what you see, how it behaves, how to install
+  ├── preview.png, preview-classic.png   screenshots (made by tools/screenshots.sh)
+  ├── layouts/<CODE>.json            classic: the normal Herdr layout, agents as players
+  ├── layouts/<CODE>-Stadium.json    stadium: a full pitch on top, terminals on the bench
+  ├── themes/<CODE>.json
+  └── mods/<id>-agents/, mods/<id>-stadium/
 
 Usage: python3 build.py [team-id ...]   (no ids: every team)
 """
@@ -16,7 +21,6 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-DIST = ROOT / "dist"
 
 WORDS = {
     "es": {
@@ -273,81 +277,6 @@ def preview_stadium(team):
     return "".join(o)
 
 
-def _inner(svg_text):
-    """The children of an <svg> document, to nest it in another."""
-    return svg_text[svg_text.index(">") + 1: svg_text.rindex("</svg>")]
-
-
-def poster(team):
-    """A README picture of the stadium look: every player state, then the bench."""
-    c, k, w = team["colors"], team["kit"], WORDS[team["words"]]
-    squad = team["squad"]
-    font = 'font-family="Helvetica, Arial, sans-serif"'
-    o = ['<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="600" viewBox="0 0 1600 600">',
-         f'<rect width="1600" height="600" fill="{c["dark"]}"/>',
-         f'<svg x="0" y="0" width="1600" height="420">{_inner(pitch_svg(team))}</svg>',
-         f'<rect x="20" y="24" width="330" height="62" rx="8" fill="#05070D" opacity=".75"/>',
-         f'<text x="34" y="60" {font} font-size="30" font-weight="800" fill="#fff">{team["stadium"]}</text>',
-         f'<text x="34" y="78" {font} font-size="13" fill="#fff" opacity=".7">6 {w["onPitch"]}</text>',
-         f'<rect x="28" y="236" width="200" height="70" rx="6" fill="#05070D" opacity=".9" stroke="{c["primary"]}" stroke-width="2"/>',
-         f'<text x="42" y="256" {font} font-size="10" font-weight="700" fill="#fff" opacity=".55">{w["matchday"]} · WEBSITE</text>',
-         f'<text x="42" y="290" font-family="Menlo, monospace" font-size="24" font-weight="800" fill="{c["primary"]}">{team["short"]} <tspan fill="#FFD23F">1-1</tspan> <tspan fill="#fff" opacity=".75">WEB</tspan></text>']
-    cast = [("run", 300, 190, "working"), ("cheer", 520, 300, "done"), ("run", 760, 200, "working"),
-            ("stand", 990, 300, "blocked"), ("run", 1220, 190, "working"), ("stand", 1420, 300, "idle")]
-    for i, (pose, x, y, state) in enumerate(cast):
-        name, num = squad[i][0], squad[i][1]
-        kit = team["gkKit"] if "gk" in squad[i][2:] else k
-        o.append(f'<svg x="{x}" y="{y}" width="64" height="96">{_inner(player_svg(kit, pose))}</svg>')
-        if kit.get("numberBg"):
-            o.append(f'<rect x="{x + 25}" y="{y + 31}" width="14" height="13" rx="2" fill="{kit["numberBg"][:7]}"/>')
-        o.append(f'<text x="{x + 32}" y="{y + 41}" text-anchor="middle" {font} font-size="11" font-weight="800" fill="{kit["number"]}">{num}</text>')
-        o.append(f'<rect x="{x + 32 - len(name) * 4 - 8}" y="{y + 98}" width="{len(name) * 8 + 16}" height="19" rx="9" fill="#000" opacity=".65"/>')
-        o.append(f'<text x="{x + 32}" y="{y + 112}" text-anchor="middle" {font} font-size="12" font-weight="700" fill="#fff">{name}</text>')
-        if state == "working":
-            o.append(f'<svg x="{x + 46}" y="{y + 80}" width="14" height="14" viewBox="0 0 20 20">{_inner(BALL_SVG)}</svg>')
-        if state == "done":
-            o.append(f'<text x="{x + 32}" y="{y - 14}" text-anchor="middle" {font} font-size="18" font-weight="900" fill="{c["accent"]}">{w["shout"]}</text>')
-        if state == "blocked":
-            o.append(f'<rect x="{x - 32}" y="{y - 36}" width="128" height="26" rx="12" fill="#FFF8E1" stroke="#D49A00" stroke-width="2"/>')
-            o.append(f'<rect x="{x - 20}" y="{y - 29}" width="9" height="12" rx="1" fill="#F6C700"/>')
-            o.append(f'<text x="{x - 6}" y="{y - 18}" {font} font-size="12" font-weight="700" fill="#5A4200">{w["blocked"]} · Claude Code</text>')
-    # counts, top right
-    for j, (n, label, col) in enumerate(((3, w["workingCount"], c["primary"]), (1, w["blockedCount"], "#F6C700"), (1, w["doneCount"], c["accent"]))):
-        x = 1130 + j * 150
-        o.append(f'<rect x="{x}" y="26" width="140" height="26" rx="13" fill="#000" opacity=".65"/>')
-        o.append(f'<circle cx="{x + 16}" cy="39" r="4" fill="{col}"/>')
-        o.append(f'<text x="{x + 28}" y="43" {font} font-size="12.5" font-weight="600" fill="#fff">{n} {label}</text>')
-    # the bench: rail and two terminals
-    # navigation bar: spaces, then the shown space's tabs, then the player on the ball
-    pr = c["primary"].lstrip("#")
-    on_primary = c["dark"] if (0.299 * int(pr[0:2], 16) + 0.587 * int(pr[2:4], 16) + 0.114 * int(pr[4:6], 16)) > 150 else "#FFFFFF"
-    o.append(f'<rect y="420" width="1600" height="29" fill="{c["surface"]}"/><rect y="420" width="1600" height="2" fill="{c["primary"]}"/>')
-    o.append(f'<text x="14" y="439" {font} font-size="10" font-weight="800" fill="{c["primary"]}">{w["spaces"]}</text>')
-    x = 14 + len(w["spaces"]) * 7.5 + 8
-    for label, active in (("website", True), ("api", False), ("›", None), ("pricing page", True), ("tests", False)):
-        if active is None:
-            o.append(f'<text x="{x}" y="440" {font} font-size="15" fill="{c["foreground"]}" opacity=".5">›</text>')
-            x += 16
-            continue
-        cw = len(label) * 7 + 20
-        o.append(f'<rect x="{x}" y="425" width="{cw}" height="20" rx="10" fill="{c["primary"] if active else "#FFFFFF"}" opacity="{1 if active else .1}"/>')
-        o.append(f'<text x="{x + cw / 2}" y="439" text-anchor="middle" {font} font-size="11.5" font-weight="{800 if active else 600}" fill="{on_primary if active else c["foreground"]}">{label}</text>')
-        x += cw + 6
-    o.append(f'<text x="1580" y="439" text-anchor="end" {font} font-size="12" font-weight="700" fill="{c["foreground"]}"><tspan fill="{c["accent"]}">▼</tspan> {squad[0][0]} · {w["onBall"]}</text>')
-    for j, (title, state, lines, border) in enumerate((
-            ("Claude Code", w["working"], ["&gt; Make the pricing page easier to scan.", "Edit src/pages/pricing.astro", "Working / checking accessibility"], c["primary"]),
-            ("Codex", w["done"], ["&gt; Clean up the pricing card styles.", "Checks passed: 24 tests, no type errors.", "Done / pricing cards are ready"], c["surface"]))):
-        x = 10 + j * 795
-        o.append(f'<rect x="{x}" y="458" width="785" height="134" rx="4" fill="{c["dark"]}" stroke="{border}" stroke-width="3"/>')
-        o.append(f'<rect x="{x + 1.5}" y="459.5" width="782" height="27" fill="{c["surface"]}"/>')
-        o.append(f'<text x="{x + 14}" y="478" {font} font-size="12" font-weight="600" fill="{c["foreground"]}">{title}</text>')
-        o.append(f'<text x="{x + 770}" y="478" text-anchor="end" {font} font-size="12" font-weight="600" fill="{c["primary"] if j == 0 else c["accent"]}">{state}</text>')
-        for li, line in enumerate(lines):
-            o.append(f'<text x="{x + 14}" y="{512 + li * 22}" font-family="Menlo, monospace" font-size="13" fill="{c["foreground"]}" opacity=".85">{line}</text>')
-    o.append("</svg>")
-    return "".join(o)
-
-
 # ---------- code and layouts ----------
 
 def team_js(team, mod):
@@ -431,12 +360,83 @@ def write(path, text):
     path.write_text(text if isinstance(text, str) else json.dumps(text, indent=2, ensure_ascii=False) + "\n")
 
 
+def recipe(team):
+    """The team folder's RECIPE.md: what you see, how it behaves, install, limits."""
+    w, code, tid = WORDS[team["words"]], team["code"], team["id"]
+    keepers = ", ".join(f"{n} ({num})" for n, num, *r in team["squad"] if "gk" in r)
+    return f"""# {team['name']} for Herdr
+
+Your coding agents as {team['name']} players. Two layouts: **{code}** keeps the normal Herdr
+window in {team['name']} colors, **{code}-Stadium** puts the whole squad on a pitch.
+
+![{code}-Stadium](preview.png)
+
+![{code}](preview-classic.png)
+
+## What you see
+
+**{code}-Stadium**, top to bottom:
+
+1. **The pitch**: a night stadium at {team['stadium']}, floodlights, stands, roof and seats in
+   {team['name']} colors, fans and flags in the kit. Top left the stadium name, a scoreboard
+   ({team['short']} goals-VAR against the shown space), top right the counts. One player per agent,
+   with its shirt number, name, space and tab.
+2. **The bar**: every space, then the shown space's tabs, as chips you click; the player you're
+   looking at; the keys.
+3. **The bench**: the shown tab's terminals, each header naming its player and status.
+
+**{code}**: Herdr's own window with the agents list titled "{team['listTitle']}": each agent wears
+the {team['name']} jersey with a shirt number and a player's name; keepers wear their own kit.
+
+## How it behaves
+
+| Status | Stadium | Classic |
+| --- | --- | --- |
+| working | runs left and right with the ball at its feet | jersey jogs, a ball rolls on a small pitch |
+| blocked | jumps under a "{w['blocked']} · program" bubble with a yellow card | `{w['blocked']}` tag |
+| done | celebrates, arms up, "{w['shout']}" | `{w['done']}` tag |
+| idle | stands, breathing | ring |
+
+- The agent you're looking at stands in a floodlight beam with the captain's armband and a
+  bouncing marker. Agents in the shown tab wear a bright name tag; the rest are dimmed.
+- Click a player to show its agent, or a chip in the bar to show a space or tab. Keys:
+  `⌘⌥[` `⌘⌥]` space, `⌘⇧[` `⌘⇧]` tab, `⌘[` `⌘]` player.
+- Each agent keeps its player while it lives; the first agent gets {team['squad'][0][0]}.
+  Keepers: {keepers}.
+
+## Install
+
+Copy into your Herdr app home (`~/.config/herdr-app`, or `$HERDR_APP_HOME`) only names that are free:
+`layouts/{code}.json`, `layouts/{code}.svg`, `layouts/{code}-Stadium.json`, `layouts/{code}-Stadium.svg`,
+`themes/{code}.json`, `mods/{tid}-agents/`, `mods/{tid}-stadium/`. Or from the repo root:
+
+```sh
+./install.sh {tid}
+herdr-app check ~/.config/herdr-app/mods/{tid}-stadium
+herdr-app do layout.switch '{{"name":"{code}-Stadium"}}'
+```
+
+## What it cannot do yet
+
+- Players stand in up to three rows of up to six; with many agents in a narrow window the last
+  ones can pass the right edge.
+- On a very short pitch block the stadium name and counts move into the scoreboard.
+
+## Squad
+
+{team['squadNote']}. Edit `squad` in `teams/{tid}.json` and run `./install.sh --update {tid}`.
+"""
+
+
 def build(team):
     """Mods keep the lowercase team id; layouts and themes use the short code the settings list shows."""
     tid, code, k, gk = team["id"], team["code"], team["kit"], team["gkKit"]
-    out = DIST / tid
-    if out.exists():
-        shutil.rmtree(out)
+    out = ROOT / team.get("folder", tid)
+    # Generated folders are rebuilt whole; the folder's screenshots stay.
+    for sub in ("layouts", "themes", "mods"):
+        if (out / sub).exists():
+            shutil.rmtree(out / sub)
+    write(out / "RECIPE.md", recipe(team))
     # classic
     m = out / "mods" / f"{tid}-agents"
     write(m / "main.js", (ROOT / "src/classic/main.js").read_text())
@@ -462,9 +462,6 @@ def build(team):
     write(out / "layouts" / f"{code}-Stadium.svg", preview_stadium(team))
     # shared colors
     write(out / "themes" / f"{code}.json", theme_json(team))
-    # README pictures (not installed)
-    write(ROOT / "previews" / f"{tid}-stadium.svg", poster(team))
-    write(ROOT / "previews" / f"{tid}.svg", preview_classic(team))
     return out
 
 

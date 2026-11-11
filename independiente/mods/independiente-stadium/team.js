@@ -1,0 +1,12 @@
+// Written by build.py from teams/independiente.json (current squad and shirt numbers (read 2026-11-11), from Wikipedia 'Club Atlético Independiente' (https://en.wikipedia.org/w/index.php?oldid=1384844882)). Edit the team file, not this.
+export const SQUAD = [["Cabral", 10], ["Rey", 33, "gk"], ["Chimy Ávila", 6], ["Montiel", 7], ["Meza", 8], ["Morales", 9], ["Calderón", 2], ["De Irastorza", 3], ["Arias", 4], ["Fedorco", 13], ["Millán", 14], ["Machuca", 15], ["Pérez Curci", 16], ["Abaldo", 19], ["Márquez", 20], ["Zabala", 22], ["Marcone", 23], ["Godoy", 29], ["Valdez", 36], ["Malcorra", 40], ["Blázquez", 1, "gk"], ["Mele", 77, "gk"]];
+export const ASSET = "mods/independiente-stadium";
+export const MOD = "independiente-stadium";
+export const C = {"primary": "#E2001A", "light": "#FF6B78", "accent": "#FFFFFF", "dark": "#1A0508", "surface": "#3A0D12", "selection": "#5C1720", "foreground": "#FBF3F3"};
+export const K = {"style": "plain", "a": "#E2001A", "b": "#E2001A", "collar": "#FFFFFF", "shorts": "#1E2A5A", "number": "#FFFFFF", "numberBg": null};
+export const GK = {"style": "plain", "a": "#1C1C1C", "b": "#1C1C1C", "collar": "#E2001A", "shorts": "#1C1C1C", "number": "#FFFFFF", "numberBg": null};
+export const W = {"working": "atacando", "blocked": "VAR", "done": "GOL", "idle": "en el banco", "onPitch": "jugadores en la cancha", "workingCount": "atacando", "blockedCount": "en el VAR", "doneCount": "goles", "bench": "EL BANCO", "matchday": "FECHA", "shout": "GOOOL!", "onBall": "con la pelota", "spaces": "PARTIDOS", "space": "partido", "tab": "tiempo", "player": "jugador"};
+export const LIST_TITLE = "El Rojo";
+export const STADIUM = "Estadio Libertadores de America";
+export const SHORT = "CAI";
+export const NAME = "Independiente";

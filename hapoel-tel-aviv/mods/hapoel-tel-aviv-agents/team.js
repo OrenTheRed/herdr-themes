@@ -1,0 +1,12 @@
+// Written by build.py from teams/hapoel-tel-aviv.json (current squad and shirt numbers (read 2026-11-11), from Wikipedia 'Hapoel Tel Aviv F.C.' (https://en.wikipedia.org/w/index.php?oldid=1382708626)). Edit the team file, not this.
+export const SQUAD = [["Turiel", 11], ["Binyamini", 1, "gk"], ["Boateng", 9], ["Korine", 7], ["Ferber", 8], ["Kraev", 6], ["Chico", 4], ["Mayembo", 5], ["Kancepolsky", 14], ["Alkukin", 15], ["Leidner", 16], ["Shavit", 17], ["Archel", 18], ["Mahamid", 19], ["Piven", 21], ["Lemkin", 23], ["Buskila", 27], ["Leliendal", 32], ["Owusu", 35], ["Dappa", 44], ["Altman", 51], ["Omri Levy", 77], ["Coco", 97], ["Falcão", 98], ["Tzur", 22, "gk"], ["Bazadog", 33, "gk"]];
+export const ASSET = "mods/hapoel-tel-aviv-agents";
+export const MOD = "hapoel-tel-aviv-agents";
+export const C = {"primary": "#E3262B", "light": "#FF7A7E", "accent": "#FFFFFF", "dark": "#140808", "surface": "#3A1214", "selection": "#5A1C1F", "foreground": "#FBF4F4"};
+export const K = {"style": "plain", "a": "#D7141A", "b": "#D7141A", "collar": "#FFFFFF", "shorts": "#FFFFFF", "number": "#FFFFFF", "numberBg": null};
+export const GK = {"style": "plain", "a": "#1C9C5C", "b": "#1C9C5C", "collar": "#FFFFFF", "shorts": "#111111", "number": "#FFFFFF", "numberBg": null};
+export const W = {"working": "attacking", "blocked": "VAR", "done": "GOAL", "idle": "on the bench", "onPitch": "players on the pitch", "workingCount": "attacking", "blockedCount": "at VAR", "doneCount": "goals", "bench": "THE BENCH", "matchday": "MATCHDAY", "shout": "GOOAAL!", "onBall": "on the ball", "spaces": "MATCHES", "space": "match", "tab": "half", "player": "player"};
+export const LIST_TITLE = "The Reds";
+export const STADIUM = "Bloomfield";
+export const SHORT = "HTA";
+export const NAME = "Hapoel Tel Aviv";

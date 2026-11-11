@@ -7,8 +7,12 @@
 
 import { View, div, image, svg } from "gpui-kit";
 import { h_flex, v_flex } from "gpui-base";
-import { agents, spaces, panes, focused, props, run, settings, setAgentOrder } from "herdr";
-import { SQUAD, ASSET, C, K, GK, W, STADIUM, SHORT } from "./team.js";
+import { agents, spaces, panes, focused, props, run, settings, shared, setShared, setAgentOrder } from "herdr";
+import { SQUAD, ASSET, MOD, C, K, GK, W, STADIUM, SHORT } from "./team.js";
+
+// Who wears which shirt. The pitch copy decides and publishes it here, so the bar and the
+// terminal headers (other copies, each with its own localStorage) name the same players.
+const PLAYERS_KEY = `${MOD}.players`;
 
 const icon = (p, color) => (p?.icon ? (p.tint ? svg(p.icon).text_color(color) : image(p.icon)).size(15) : div().size(15));
 const WORD = { working: W.working, blocked: W.blocked, done: W.done, idle: W.idle };
@@ -23,17 +27,23 @@ const ON_PRIMARY = (() => {
 export default class Stadium extends View {
   init(_props, cx) {
     this.step = 0;
-    this.size = { width: 1400, height: 400 };
+    this.raw = { width: 1400, height: 400 };
     this.players = JSON.parse(localStorage.getItem("players") ?? "{}");
+    // Publish what the pitch remembers, outside render (setShared re-renders every mod).
+    if (!props()?.role) cx.spawn(async () => setShared(PLAYERS_KEY, { ...this.players }));
     // The timer only moves where running players are headed; .transition does the moving.
     if (!props()?.role) cx.timer.every(3800, (cx) => { this.step++; cx.notify(); });
   }
 
   // Each live agent wears the first shirt no other live agent wears, kept across restarts.
-  pick(list) {
+  pick(list, cx) {
     const live = new Set(list.map((a) => a.address));
     let dirty = false;
-    for (const k of Object.keys(this.players)) if (!live.has(k) && list.length) { delete this.players[k]; dirty = true; }
+    for (const [k, i] of Object.entries(this.players)) {
+      // Gone agents, and shirts a shorter or edited squad no longer has, are given back.
+      const valid = Number.isInteger(i) && i >= 0 && i < SQUAD.length;
+      if (!valid || (!live.has(k) && list.length)) { delete this.players[k]; dirty = true; }
+    }
     const taken = new Set(Object.values(this.players));
     for (const a of list) {
       if (this.players[a.address] != null) continue;
@@ -43,11 +53,16 @@ export default class Stadium extends View {
       taken.add(i);
       dirty = true;
     }
-    if (dirty) localStorage.setItem("players", JSON.stringify(this.players));
+    if (!dirty) return;
+    localStorage.setItem("players", JSON.stringify(this.players));
+    const snapshot = { ...this.players };
+    cx.spawn(async () => setShared(PLAYERS_KEY, snapshot));
   }
 
+  // The pitch copy reads its own assignment; the bar and headers read the published one.
   squadOf(a) {
-    const [name, num, role] = SQUAD[this.players[a.address] ?? 0];
+    const map = props()?.role ? (shared(PLAYERS_KEY) ?? {}) : this.players;
+    const [name, num, role] = SQUAD[(map[a.address] ?? 0) % SQUAD.length];
     return { name, num, gk: role === "gk" };
   }
 
@@ -99,6 +114,13 @@ export default class Stadium extends View {
       .child(body)
       .child(tag)
       .child(div().max_w(118).truncate().text_size(10.5).text_color("#FFFFFFC0").child(`${a.space_name} · ${a.tab_name ?? ""}`));
+  }
+
+  // The block's size in this mod's px. on_size_change reports window pixels, and the app zoom
+  // scales this mod's px, so divide the zoom out here, at draw time, where a zoom change lands too.
+  get size() {
+    const z = Number(settings()?.zoom ?? 1) || 1;
+    return { width: this.raw.width / z, height: this.raw.height / z };
   }
 
   // The pitch art (1600x420) fits the block's width. Images keep their aspect ratio, so a short
@@ -178,7 +200,7 @@ export default class Stadium extends View {
         .child(key("⌘⌥[ ]", W.space)).child(key("⌘⇧[ ]", W.tab)).child(key("⌘[ ]", W.player)));
   }
 
-  render() {
+  render(cx) {
     const p = props() ?? {};
     if (p.role === "pane") {
       const pane = panes().find((x) => x.pane === p.pane);
@@ -194,7 +216,7 @@ export default class Stadium extends View {
     if (p.role === "rail") return this.rail();
 
     const list = agents();
-    this.pick(list);
+    this.pick(list, cx);
     setAgentOrder(list.map((a) => a.address));
     const active = spaces().find((s) => s.active);
     const tab = active?.tabs.find((t) => t.active);
@@ -208,11 +230,7 @@ export default class Stadium extends View {
 
     return div().id("root").relative().size_full().overflow_hidden().bg(C.dark)
       // The reported size is in window pixels; this mod's px are scaled by the app zoom, so divide it out.
-      .on_size_change((size, cx) => {
-        const z = Number(settings()?.zoom ?? 1) || 1;
-        this.size = { width: size.width / z, height: size.height / z };
-        cx.notify();
-      })
+      .on_size_change((size, cx) => { this.raw = size; cx.notify(); })
       .child(image(`${ASSET}/pitch.svg`).absolute().left(0).top(g.top).w(g.w).h(g.h))
       .children(this.moreGrass(g))
       .when(!g.compact, (el) => el.child(v_flex().absolute().left(20).top(30).gap(2).px(10).py(6).rounded(8).bg("#05070DB3").text_color("#FFFFFF")

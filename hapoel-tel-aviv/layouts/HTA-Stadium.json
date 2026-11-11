@@ -1,0 +1,88 @@
+{
+  "id": "hapoel-tel-aviv-stadium-root",
+  "type": "column",
+  "titlebar": "none",
+  "theme": "HTA",
+  "preview": "layouts/HTA-Stadium.svg",
+  "traffic_lights": [
+    12,
+    16
+  ],
+  "font_size": 13,
+  "ui_font": "Geist",
+  "background": "#140808",
+  "colors": {
+    "accent": "#E3262B",
+    "border": "#3A1214"
+  },
+  "terminal_padding": [
+    10,
+    12
+  ],
+  "resizable": false,
+  "children": [
+    {
+      "id": "stadium-field",
+      "type": "block",
+      "size": {
+        "weight": 0.85
+      },
+      "content": {
+        "mod": "hapoel-tel-aviv-stadium"
+      }
+    },
+    {
+      "id": "stadium-rail",
+      "type": "block",
+      "size": {
+        "px": 44
+      },
+      "content": {
+        "mod": "hapoel-tel-aviv-stadium",
+        "props": {
+          "role": "rail"
+        }
+      }
+    },
+    {
+      "id": "stadium-bench",
+      "type": "block",
+      "size": {
+        "weight": 1
+      },
+      "padding": [
+        0,
+        10
+      ],
+      "background": "#140808",
+      "content": {
+        "tab": "active",
+        "pane": {
+          "gap": 10,
+          "radius": 4,
+          "lone": true,
+          "background": "#140808",
+          "border": {
+            "width": 3,
+            "color": "#3A1214"
+          },
+          "focus": {
+            "width": 3,
+            "color": "#E3262B"
+          },
+          "header": {
+            "content": {
+              "mod": "hapoel-tel-aviv-stadium",
+              "props": {
+                "role": "pane"
+              }
+            },
+            "height": 28,
+            "position": "top",
+            "reveal": "always"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+// Written by build.py from teams/atletico-madrid.json (2025-26 season squad and shirt numbers, from Wikipedia '2025-26 Atlético Madrid season' (https://en.wikipedia.org/w/index.php?oldid=1380212022)). Edit the team file, not this.
+export const SQUAD = [["Julián", 19], ["Oblak", 13, "gk"], ["Griezmann", 7], ["Koke", 6], ["Giménez", 2], ["Barrios", 8], ["Sørloth", 9], ["Baena", 10], ["Almada", 11], ["Llorente", 14], ["Lenglet", 15], ["Molina", 16], ["Hancko", 17], ["Pubill", 18], ["G. Simeone", 20], ["Lookman", 22], ["Nico González", 23], ["Le Normand", 24], ["Cardoso", 5], ["Ruggeri", 3], ["Mendoza", 4], ["Vargas", 21], ["Musso", 1, "gk"]];
+export const ASSET = "mods/atletico-madrid-stadium";
+export const MOD = "atletico-madrid-stadium";
+export const C = {"primary": "#E03A3E", "light": "#FF8A8C", "accent": "#FFFFFF", "dark": "#10142E", "surface": "#272E61", "selection": "#3A4280", "foreground": "#F4F5FA"};
+export const K = {"style": "stripes", "a": "#CB3524", "b": "#FFFFFF", "collar": "#272E61", "shorts": "#272E61", "number": "#272E61", "numberBg": "#FFFFFFD9"};
+export const GK = {"style": "plain", "a": "#1A9E55", "b": "#1A9E55", "collar": "#FFFFFF", "shorts": "#1A9E55", "number": "#FFFFFF", "numberBg": null};
+export const W = {"working": "atacando", "blocked": "VAR", "done": "GOL", "idle": "en el banco", "onPitch": "jugadores en la cancha", "workingCount": "atacando", "blockedCount": "en el VAR", "doneCount": "goles", "bench": "EL BANCO", "matchday": "FECHA", "shout": "GOOOL!", "onBall": "con la pelota", "spaces": "PARTIDOS", "space": "partido", "tab": "tiempo", "player": "jugador"};
+export const LIST_TITLE = "Los Colchoneros";
+export const STADIUM = "Metropolitano";
+export const SHORT = "ATM";
+export const NAME = "Atletico Madrid";
