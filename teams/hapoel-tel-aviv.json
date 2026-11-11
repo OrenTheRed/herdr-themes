@@ -1,0 +1,25 @@
+{
+  "id": "hapoel-tel-aviv",
+  "name": "Hapoel Tel Aviv",
+  "short": "HTA",
+  "listTitle": "The Reds",
+  "stadium": "Bloomfield",
+  "squadNote": "club legends; numbers are lineup positions, not their real shirts",
+  "squad": [
+    ["Enyeama", 1], ["Douglas", 2], ["Badier", 3], ["Ben Dayan", 4], ["Natcho", 5],
+    ["Vermouth", 6], ["Shivhon", 7], ["Toama", 8], ["Shechter", 9], ["Zahavi", 10],
+    ["Tamuz", 11], ["Sahar", 12], ["Rifaat Turk", 13]
+  ],
+  "colors": {
+    "primary": "#E3262B",
+    "light": "#FF7A7E",
+    "accent": "#FFFFFF",
+    "dark": "#140808",
+    "surface": "#3A1214",
+    "selection": "#5A1C1F",
+    "foreground": "#FBF4F4"
+  },
+  "kit": { "style": "plain", "a": "#D7141A", "b": "#D7141A", "collar": "#FFFFFF", "shorts": "#FFFFFF", "number": "#FFFFFF", "numberBg": null },
+  "crowd": ["#D7141A", "#FFFFFF", "#111111"],
+  "words": "en"
+}

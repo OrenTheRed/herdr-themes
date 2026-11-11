@@ -1,0 +1,25 @@
+{
+  "id": "independiente",
+  "name": "Independiente",
+  "short": "CAI",
+  "listTitle": "El Rojo",
+  "stadium": "Libertadores de America",
+  "squadNote": "club legends; numbers are lineup positions, not their real shirts",
+  "squad": [
+    ["Santoro", 1], ["Clausen", 2], ["Pavoni", 3], ["Trossero", 4], ["G. Milito", 5],
+    ["Pastoriza", 6], ["Bertoni", 7], ["Burruchaga", 8], ["Erico", 9], ["Bochini", 10],
+    ["Aguero", 11], ["Forlan", 12], ["Garnero", 13], ["Rolfi", 14], ["Usuriaga", 15]
+  ],
+  "colors": {
+    "primary": "#E2001A",
+    "light": "#FF6B78",
+    "accent": "#FFFFFF",
+    "dark": "#1A0508",
+    "surface": "#3A0D12",
+    "selection": "#5C1720",
+    "foreground": "#FBF3F3"
+  },
+  "kit": { "style": "plain", "a": "#E2001A", "b": "#E2001A", "collar": "#FFFFFF", "shorts": "#1E2A5A", "number": "#FFFFFF", "numberBg": null },
+  "crowd": ["#E2001A", "#FFFFFF", "#E2001A"],
+  "words": "es"
+}

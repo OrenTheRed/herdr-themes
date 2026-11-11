@@ -1,0 +1,25 @@
+{
+  "id": "albiceleste",
+  "name": "Argentina",
+  "short": "ARG",
+  "listTitle": "La Scaloneta",
+  "stadium": "El Monumental",
+  "squadNote": "2022 World Cup squad, shirt numbers from that tournament (from memory, not checked against a source)",
+  "squad": [
+    ["Messi", 10], ["Dibu", 23], ["Di Maria", 11], ["Julian", 9], ["Enzo", 24],
+    ["Mac Allister", 20], ["De Paul", 7], ["Cuti", 13], ["Otamendi", 19], ["Lautaro", 22],
+    ["Molina", 26], ["Tagliafico", 3], ["Lisandro", 25], ["Paredes", 5], ["Acuna", 8]
+  ],
+  "colors": {
+    "primary": "#75AADB",
+    "light": "#A8D0F0",
+    "accent": "#F6B40E",
+    "dark": "#0B1E2D",
+    "surface": "#1D3A52",
+    "selection": "#2A5577",
+    "foreground": "#F2F7FC"
+  },
+  "kit": { "style": "stripes", "a": "#75AADB", "b": "#FFFFFF", "collar": "#F6B40E", "shorts": "#14213D", "number": "#0B1E2D", "numberBg": null },
+  "crowd": ["#75AADB", "#FFFFFF", "#F6B40E"],
+  "words": "es"
+}
