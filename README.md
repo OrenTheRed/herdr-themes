@@ -62,7 +62,12 @@ All art (jerseys, players, ball, spotlight, stadium) is generated SVG from the t
 ## Squads
 
 - **Argentina**: the 2026 World Cup squad and shirt numbers, from [Mundo Albiceleste (2026-05-28)](https://mundoalbiceleste.com/2026/05/28/argentina-national-team-shirt-numbers-announced-for-world-cup-lionel-messi-to-wear-10-for-record-time/). Keepers (Dibu 23, Musso 1, Rulli 12) wear red.
-- **Clubs**: legends, numbered 1 to 15 by lineup position, not their real shirt numbers; written from memory and not checked against a source. Keeper kit colors are a style choice, not a specific season's kit.
+- **Juventus**: the 2016-17 squad and numbers, from [Wikipedia, 2016-17 Juventus FC season](https://en.wikipedia.org/w/index.php?oldid=1383808656).
+- **Atletico Madrid**: the 2025-26 squad and numbers, from [Wikipedia, 2025-26 Atlético Madrid season](https://en.wikipedia.org/w/index.php?oldid=1380212022).
+- **Hapoel Tel Aviv**: the current (2026) squad and numbers, read 2026-11-11 from [Wikipedia, Hapoel Tel Aviv F.C.](https://en.wikipedia.org/w/index.php?oldid=1382708626).
+- **Independiente**: the current (2026) squad and numbers, read 2026-11-11 from [Wikipedia, Club Atlético Independiente](https://en.wikipedia.org/w/index.php?oldid=1384844882).
+
+The first player in each list is picked first, the first-choice keeper second. Club keeper kit colors are a style choice, not a specific season's kit.
 
 Edit `squad` in the team file to change them.
 

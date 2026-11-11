@@ -5,68 +5,118 @@
   "short": "JUV",
   "listTitle": "Bianconeri",
   "stadium": "Allianz Stadium",
-  "squadNote": "club legends; numbers are lineup positions, not their real shirts",
+  "squadNote": "2016-17 season squad and shirt numbers, from Wikipedia '2016-17 Juventus FC season' (https://en.wikipedia.org/w/index.php?oldid=1383808656)",
   "squad": [
+    [
+      "Dybala",
+      21
+    ],
     [
       "Buffon",
       1,
       "gk"
     ],
     [
-      "Zambrotta",
-      2
+      "Higuaín",
+      9
+    ],
+    [
+      "Pjanić",
+      5
+    ],
+    [
+      "Bonucci",
+      19
     ],
     [
       "Chiellini",
       3
     ],
     [
-      "Scirea",
-      4
+      "Dani Alves",
+      23
     ],
     [
-      "Cabrini",
-      5
+      "Mandžukić",
+      17
     ],
     [
-      "Pirlo",
+      "Khedira",
       6
     ],
     [
-      "Nedved",
-      7
-    ],
-    [
-      "Zidane",
+      "Marchisio",
       8
     ],
     [
-      "Trezeguet",
-      9
+      "Barzagli",
+      15
     ],
     [
-      "Del Piero",
-      10
-    ],
-    [
-      "Platini",
-      11
-    ],
-    [
-      "Baggio",
+      "Alex Sandro",
       12
     ],
     [
-      "Bonucci",
-      13
+      "Cuadrado",
+      7
     ],
     [
-      "Dybala",
-      14
+      "Lichtsteiner",
+      26
     ],
     [
-      "Sivori",
-      15
+      "Pjaca",
+      20
+    ],
+    [
+      "Rugani",
+      24
+    ],
+    [
+      "Asamoah",
+      22
+    ],
+    [
+      "Benatia",
+      4
+    ],
+    [
+      "Sturaro",
+      27
+    ],
+    [
+      "Rincón",
+      28
+    ],
+    [
+      "Lemina",
+      18
+    ],
+    [
+      "Kean",
+      34
+    ],
+    [
+      "Mandragora",
+      38
+    ],
+    [
+      "Hernanes",
+      11
+    ],
+    [
+      "Evra",
+      33
+    ],
+    [
+      "Neto",
+      25,
+      "gk"
+    ],
+    [
+      "Audero",
+      32,
+      "gk"
     ]
   ],
   "colors": {

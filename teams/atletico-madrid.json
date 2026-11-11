@@ -5,68 +5,101 @@
   "short": "ATM",
   "listTitle": "Los Colchoneros",
   "stadium": "Metropolitano",
-  "squadNote": "club legends; numbers are lineup positions, not their real shirts",
+  "squadNote": "2025-26 season squad and shirt numbers, from Wikipedia '2025-26 Atlético Madrid season' (https://en.wikipedia.org/w/index.php?oldid=1380212022)",
   "squad": [
     [
+      "Julián",
+      19
+    ],
+    [
       "Oblak",
-      1,
+      13,
       "gk"
     ],
     [
-      "Juanfran",
-      2
-    ],
-    [
-      "Godin",
-      3
-    ],
-    [
-      "Miranda",
-      4
-    ],
-    [
-      "Filipe Luis",
-      5
-    ],
-    [
-      "Gabi",
-      6
-    ],
-    [
-      "Koke",
+      "Griezmann",
       7
     ],
     [
-      "Simeone",
+      "Koke",
+      6
+    ],
+    [
+      "Giménez",
+      2
+    ],
+    [
+      "Barrios",
       8
     ],
     [
-      "Torres",
+      "Sørloth",
       9
     ],
     [
-      "Griezmann",
+      "Baena",
       10
     ],
     [
-      "Arda",
+      "Almada",
       11
     ],
     [
-      "Aguero",
-      12
-    ],
-    [
-      "Forlan",
-      13
-    ],
-    [
-      "Luis Aragones",
+      "Llorente",
       14
     ],
     [
-      "Diego Costa",
+      "Lenglet",
       15
+    ],
+    [
+      "Molina",
+      16
+    ],
+    [
+      "Hancko",
+      17
+    ],
+    [
+      "Pubill",
+      18
+    ],
+    [
+      "G. Simeone",
+      20
+    ],
+    [
+      "Lookman",
+      22
+    ],
+    [
+      "Nico González",
+      23
+    ],
+    [
+      "Le Normand",
+      24
+    ],
+    [
+      "Cardoso",
+      5
+    ],
+    [
+      "Ruggeri",
+      3
+    ],
+    [
+      "Mendoza",
+      4
+    ],
+    [
+      "Vargas",
+      21
+    ],
+    [
+      "Musso",
+      1,
+      "gk"
     ]
   ],
   "colors": {

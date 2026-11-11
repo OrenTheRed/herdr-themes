@@ -5,68 +5,98 @@
   "short": "CAI",
   "listTitle": "El Rojo",
   "stadium": "Estadio Libertadores de America",
-  "squadNote": "club legends; numbers are lineup positions, not their real shirts",
+  "squadNote": "current squad and shirt numbers (read 2026-11-11), from Wikipedia 'Club Atlético Independiente' (https://en.wikipedia.org/w/index.php?oldid=1384844882)",
   "squad": [
     [
-      "Santoro",
+      "Cabral",
+      10
+    ],
+    [
+      "Rey",
+      33,
+      "gk"
+    ],
+    [
+      "Chimy Ávila",
+      6
+    ],
+    [
+      "Montiel",
+      7
+    ],
+    [
+      "Meza",
+      8
+    ],
+    [
+      "Morales",
+      9
+    ],
+    [
+      "Calderón",
+      2
+    ],
+    [
+      "De Irastorza",
+      3
+    ],
+    [
+      "Arias",
+      4
+    ],
+    [
+      "Fedorco",
+      13
+    ],
+    [
+      "Millán",
+      14
+    ],
+    [
+      "Machuca",
+      15
+    ],
+    [
+      "Pérez Curci",
+      16
+    ],
+    [
+      "Abaldo",
+      19
+    ],
+    [
+      "Márquez",
+      20
+    ],
+    [
+      "Zabala",
+      22
+    ],
+    [
+      "Marcone",
+      23
+    ],
+    [
+      "Godoy",
+      29
+    ],
+    [
+      "Valdez",
+      36
+    ],
+    [
+      "Malcorra",
+      40
+    ],
+    [
+      "Blázquez",
       1,
       "gk"
     ],
     [
-      "Clausen",
-      2
-    ],
-    [
-      "Pavoni",
-      3
-    ],
-    [
-      "Trossero",
-      4
-    ],
-    [
-      "G. Milito",
-      5
-    ],
-    [
-      "Pastoriza",
-      6
-    ],
-    [
-      "Bertoni",
-      7
-    ],
-    [
-      "Burruchaga",
-      8
-    ],
-    [
-      "Erico",
-      9
-    ],
-    [
-      "Bochini",
-      10
-    ],
-    [
-      "Aguero",
-      11
-    ],
-    [
-      "Forlan",
-      12
-    ],
-    [
-      "Garnero",
-      13
-    ],
-    [
-      "Rolfi",
-      14
-    ],
-    [
-      "Usuriaga",
-      15
+      "Mele",
+      77,
+      "gk"
     ]
   ],
   "colors": {
