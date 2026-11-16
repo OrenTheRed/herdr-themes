@@ -14,12 +14,13 @@ window in Hapoel Tel Aviv colors, **HTA-Stadium** puts the whole squad on a pitc
 1. **The pitch**: a night stadium at Bloomfield, floodlights, stands, roof and seats in
    Hapoel Tel Aviv colors, fans and flags in the kit. Top left the stadium name, a scoreboard
    (HTA goals-VAR against the shown space), top right the counts. One player per agent,
-   with its shirt number, name, space and tab.
+   with its shirt number, name, space and tab, stood in a formation (keeper at the back, attack
+   toward the camera); crowded lines shrink to stay on the pitch.
 2. **The bar**: every space, then the shown space's tabs, as chips you click; the player you're
    looking at; the keys.
 3. **The bench**: the shown tab's terminals, each header naming its player and status.
 
-**HTA**: Herdr's own window with the agents list titled "The Reds": each agent wears
+**HTA**: Herdr's own window with the agents list titled "האדומים": each agent wears
 the Hapoel Tel Aviv jersey with a shirt number and a player's name; keepers wear their own kit.
 
 ## How it behaves
@@ -28,7 +29,7 @@ the Hapoel Tel Aviv jersey with a shirt number and a player's name; keepers wear
 | --- | --- | --- |
 | working | runs left and right with the ball at its feet | jersey jogs, a ball rolls on a small pitch |
 | blocked | jumps under a "VAR · program" bubble with a yellow card | `VAR` tag |
-| done | celebrates, arms up, "GOOAAL!" | `GOAL` tag |
+| done | celebrates, arms up, "גווול!" | `גול` tag |
 | idle | stands, breathing | ring |
 
 - The agent you're looking at stands in a floodlight beam with the captain's armband and a
@@ -52,10 +53,10 @@ herdr-app do layout.switch '{"name":"HTA-Stadium"}'
 
 ## What it cannot do yet
 
-- Players stand in up to three rows of up to six; with many agents in a narrow window the last
-  ones can pass the right edge.
 - On a very short pitch block the stadium name and counts move into the scoreboard.
 
 ## Squad
 
 current squad and shirt numbers (read 2026-11-11), from Wikipedia 'Hapoel Tel Aviv F.C.' (https://en.wikipedia.org/w/index.php?oldid=1382708626). Edit `squad` in `teams/hapoel-tel-aviv.json` and run `./install.sh --update hapoel-tel-aviv`.
+Optional third item on a squad entry: `gk`, `def`, `mid`, or `fwd` (formation line; only `gk`
+changes the kit). Untagged outfield players are placed automatically.

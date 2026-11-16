@@ -3,7 +3,7 @@
   "code": "HTA",
   "name": "Hapoel Tel Aviv",
   "short": "HTA",
-  "listTitle": "The Reds",
+  "listTitle": "האדומים",
   "stadium": "Bloomfield",
   "squadNote": "current squad and shirt numbers (read 2026-11-11), from Wikipedia 'Hapoel Tel Aviv F.C.' (https://en.wikipedia.org/w/index.php?oldid=1382708626)",
   "squad": [
@@ -147,5 +147,5 @@
     "#FFFFFF",
     "#111111"
   ],
-  "words": "en"
+  "words": "he"
 }

@@ -61,7 +61,9 @@ tools/demo-scene.sh    the made-up demo scene the screenshots use
 tools/screenshots.sh   switch layouts and write preview.png / preview-classic.png per team
 ```
 
-All art (jerseys, players, ball, spotlight, stadium) is SVG generated from the team file. To add a team, copy a file in `teams/`, change it, and run `./install.sh <new-id>`. Mark a keeper with `"gk"` as the third item of their squad entry.
+All art (jerseys, players, ball, spotlight, stadium) is SVG generated from the team file. To add a team, copy a file in `teams/`, change it, and run `./install.sh <new-id>`. `build.py` validates the file first (colors, kit style, squad, language).
+
+Kit `style` values: `plain`, `stripes`, `hoops`, `halves`, `sash`. Squad entries are `[name, number]` or `[name, number, role]` with role `gk`, `def`, `mid`, or `fwd` — only `gk` changes the kit; the others pin a formation line. Untagged outfield players are placed automatically. Words packs: `es`, `it`, `en`, `he`.
 
 ## About the demo
 
