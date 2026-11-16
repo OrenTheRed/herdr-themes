@@ -33,6 +33,9 @@ the Hapoel Tel Aviv jersey with a shirt number and a player's name; keepers wear
 
 - The agent you're looking at stands in a floodlight beam with the captain's armband and a
   bouncing marker. Agents in the shown tab wear a bright name tag; the rest are dimmed.
+- The agent behind a player (Claude Code, Codex, ...) is its shirt sponsor: a badge next to the
+  jersey in the list, and on the shirt, the name tag and the ad boards in the stadium, with the
+  number of players of each agent (in a short block the boards move to the top right).
 - Click a player to show its agent, or a chip in the bar to show a space or tab. Keys:
   `⌘⌥[` `⌘⌥]` space, `⌘⇧[` `⌘⇧]` tab, `⌘[` `⌘]` player.
 - Each agent keeps its player while it lives; the first agent gets Turiel.

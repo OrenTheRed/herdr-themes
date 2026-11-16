@@ -96,6 +96,15 @@ function icon(p, size, color) {
   return p.tint ? svg(p.icon).size(size).flex_none().text_color(color) : image(p.icon).w(size).h(size).flex_none();
 }
 
+// The agent as the shirt sponsor: its picture on a white patch, or its one-color glyph on its tile.
+function sponsor(p, size) {
+  if (!p?.icon) return null;
+  const inner = Math.round(size * 0.8);
+  return div().flex().flex_none().items_center().justify_center().size(size).rounded(size * 0.2)
+    .bg(p.tint ? p.tile ?? "#1C1D21" : "#FFFFFF").border(1).border_color("#00000066")
+    .child(icon(p, inner, p.color ?? "#FFFFFF"));
+}
+
 export default class Agents extends View {
   init(_props, cx) {
     if (props()?.sortMenu) return;
@@ -414,6 +423,8 @@ export default class Agents extends View {
             this.folded.has(a.address) ? this.folded.delete(a.address) : this.folded.add(a.address);
             cx.notify();
           })).child(pic)))
+        // The sponsor next to the shirt: which agent this player is.
+        .when(Boolean(a.program?.icon), el => el.child(sponsor(a.program, 15)))
         .child(h_flex().flex_1().min_w(0).gap(5).items_center()
           .child(div().flex_none().font_semibold().text_color(idle ? t.muted : C.primary).child(player))
           .child(div().flex_1().min_w(0).truncate().text_color(t.dim).child(`\u00b7 ${full && more ? `${name} \u00b7 ${more}` : name}`)))

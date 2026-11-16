@@ -33,7 +33,7 @@ argentina/
 | done | celebrates, "GOOOL!" | `GOL` / `GOAL` tag |
 | idle | stands and waits | ring |
 
-In the stadium, the agent you're looking at stands in a floodlight with the captain's armband. The bar under the pitch lists every space and the shown space's tabs; click one to go there, or click a player. Keys: `⌘⌥[` `⌘⌥]` space, `⌘⇧[` `⌘⇧]` tab, `⌘[` `⌘]` player. Keepers wear their own kit. Words follow the team: Spanish, Italian or English.
+In the stadium, the agent you're looking at stands in a floodlight with the captain's armband. The bar under the pitch lists every space and the shown space's tabs; click one to go there, or click a player. Keys: `⌘⌥[` `⌘⌥]` space, `⌘⇧[` `⌘⇧]` tab, `⌘[` `⌘]` player. Keepers wear their own kit. The agent behind a player (Claude Code, Codex, ...) is its shirt sponsor: a badge next to the jersey in the classic list, and on the shirt, the name tag and the ad boards in the stadium, which also count the players of each agent. Words follow the team: Spanish, Italian or English.
 
 ## Install
 

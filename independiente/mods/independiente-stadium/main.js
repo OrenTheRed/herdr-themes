@@ -15,6 +15,14 @@ import { SQUAD, ASSET, MOD, C, K, GK, W, STADIUM, SHORT } from "./team.js";
 const PLAYERS_KEY = `${MOD}.players`;
 
 const icon = (p, color) => (p?.icon ? (p.tint ? svg(p.icon).text_color(color) : image(p.icon)).size(15) : div().size(15));
+// The agent as the shirt sponsor: its picture on a white patch, or its one-color glyph on its tile.
+const sponsor = (p, size) => {
+  if (!p?.icon) return null;
+  const inner = Math.round(size * 0.8);
+  return div().flex().flex_none().items_center().justify_center().size(size).rounded(size * 0.2)
+    .bg(p.tint ? p.tile ?? "#1C1D21" : "#FFFFFF").border(1).border_color("#00000066")
+    .child(p.tint ? svg(p.icon).size(inner).text_color(p.color ?? "#FFFFFF") : image(p.icon).size(inner));
+};
 const WORD = { working: W.working, blocked: W.blocked, done: W.done, idle: W.idle };
 const DOT = { working: C.primary, blocked: "#F6C700", done: C.accent, idle: "#FFFFFF55" };
 // Readable text on a primary-colored chip: dark on light primaries, white on dark ones.
@@ -79,6 +87,8 @@ export default class Stadium extends View {
       .child(image(`${ASSET}/${pose}${gk ? "-gk" : ""}.svg`).w(64).h(96))
       .when(Boolean(kit.numberBg), (el) => el.child(div().absolute().left(25).top(31).w(14).h(13).rounded(2).bg(kit.numberBg ?? "#0000")))
       .child(div().absolute().left(0).top(30).w(64).text_center().text_size(12).font_weight(800).text_color(kit.number).child(String(num)))
+      // The sponsor on the shirt, under the number: which agent this player is.
+      .when(Boolean(a.program?.icon), (el) => el.child(div().absolute().left(26).top(43).child(sponsor(a.program, 12))))
       // Captain's armband on the left sleeve.
       .when(captain, (el) => el.child(div().absolute().left(13).top(33).w(11).h(9).rounded(2).bg(C.accent).border(1).border_color("#000000AA")
         .flex().items_center().justify_center().text_size(7).font_weight(900).text_color("#000").child("C")));
@@ -92,7 +102,9 @@ export default class Stadium extends View {
     if (done) body.loop("top", { from: 0, to: -7, period: 640 });
     if (!working && !blocked && !done) body.loop("top", { from: 0, to: 2, period: 2600 });
 
-    const tag = div().mt(2).px(9).py(1).rounded(8).text_size(12).font_weight(800)
+    // The name tag repeats the sponsor: the patch on the shirt is small.
+    const tag = h_flex().mt(2).px(9).py(1).gap(5).items_center().rounded(8).text_size(12).font_weight(800)
+      .when(Boolean(a.program?.icon), (el) => el.child(sponsor(a.program, 13)))
       .bg(captain || bench ? C.primary : "#000000A0")
       .text_color(captain || bench ? ON_PRIMARY : "#FFFFFF")
       .when(captain, (el) => el.border(2).border_color(C.accent))
@@ -147,6 +159,30 @@ export default class Stadium extends View {
       ...stripes,
       ...[20 * s, g.w / 2, g.w - 20 * s].map((x) => div().absolute().left(x - 1.5 * s).top(y).w(3 * s).h(g.extra).bg(line)),
     ];
+  }
+
+  // The agents on the pitch as sponsors on the art's ad boards (160 apart, 148x16 at y 208):
+  // one board per agent with its player count, most players first. In a short block the players
+  // stand in front of the boards (or the boards are too small to read), so the same signs go in
+  // a row under the status counts instead.
+  boards(list, g, slots) {
+    if (g.compact) return [];
+    const s = g.scale;
+    const onArt = 16 * s >= 12 && (slots[0]?.y ?? Infinity) >= g.top + 224 * s;
+    const h = onArt ? 16 * s : 18;
+    const by = new Map();
+    for (const a of list) {
+      const k = a.program?.key ?? "agent";
+      by.set(k, { p: a.program, n: (by.get(k)?.n ?? 0) + 1 });
+    }
+    const signs = [...by.values()].sort((x, y) => y.n - x.n).slice(0, 8).map(({ p, n }) =>
+      h_flex().flex_none().h(h).rounded(2).px(6).gap(5).items_center().justify_center().bg("#F5F5F0").text_color("#111111")
+        .text_size(Math.min(11, h - 4)).font_weight(800)
+        .when(Boolean(p?.icon), (el) => el.child(sponsor(p, Math.round(h - 3))))
+        .child(div().truncate().child(`${p?.name ?? "Agent"} ×${n}`)));
+    // The first two boards stay clear of the scoreboard; the art has ten.
+    if (onArt) return signs.map((el, i) => el.absolute().left(((i + 2) * 160 + 6) * s).top(g.top + 208 * s).w(148 * s));
+    return [h_flex().absolute().right(28).top(62).gap(8).children(signs)];
   }
 
   // Where each player stands: rows of up to six across the grass, right of the scoreboard.
@@ -234,6 +270,7 @@ export default class Stadium extends View {
       .on_size_change((size, cx) => { this.raw = size; cx.notify(); })
       .child(image(`${ASSET}/pitch.svg`).absolute().left(0).top(g.top).w(g.w).h(g.h))
       .children(this.moreGrass(g))
+      .children(this.boards(list, g, slots))
       .when(!g.compact, (el) => el.child(v_flex().absolute().left(20).top(30).gap(2).px(10).py(6).rounded(8).bg("#05070DB3").text_color("#FFFFFF")
         .child(div().text_size(26).font_weight(800).child(STADIUM))
         .child(div().text_size(12.5).text_color("#FFFFFFB0").child(`${list.length} ${W.onPitch}`))))
