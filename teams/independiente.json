@@ -118,9 +118,9 @@
     "numberBg": null
   },
   "gkKit": {
-    "style": "plain",
+    "style": "sash",
     "a": "#1C1C1C",
-    "b": "#1C1C1C",
+    "b": "#E2001A",
     "collar": "#E2001A",
     "shorts": "#1C1C1C",
     "number": "#FFFFFF",

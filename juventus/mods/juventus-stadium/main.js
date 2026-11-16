@@ -61,10 +61,57 @@ export default class Stadium extends View {
   }
 
   // The pitch copy reads its own assignment; the bar and headers read the published one.
+  // Optional third squad item: "gk" | "def" | "mid" | "fwd" (only "gk" changes the kit).
   squadOf(a) {
     const map = props()?.role ? (shared(PLAYERS_KEY) ?? {}) : this.players;
     const [name, num, role] = SQUAD[(map[a.address] ?? 0) % SQUAD.length];
-    return { name, num, gk: role === "gk" };
+    const line = role === "gk" || role === "def" || role === "mid" || role === "fwd" ? role : null;
+    return { name, num, gk: line === "gk", role: line };
+  }
+
+  // Back→front line sizes for n outfield players (no keeper), used when squad roles are untagged.
+  fieldShape(n) {
+    if (n <= 0) return [];
+    if (n === 1) return [1];
+    if (n === 2) return [1, 1];
+    if (n === 3) return [1, 2];
+    if (n === 4) return [2, 2];
+    if (n === 5) return [2, 3];
+    if (n === 6) return [2, 2, 2];
+    if (n === 7) return [3, 2, 2];
+    if (n === 8) return [3, 3, 2];
+    if (n === 9) return [3, 3, 3];
+    if (n === 10) return [4, 3, 3];
+    if (n === 11) return [4, 4, 3];
+    // Many agents: four lines, as even as possible.
+    const lines = 4, base = Math.floor(n / lines), rem = n % lines;
+    return Array.from({ length: lines }, (_, i) => base + (i >= lines - rem ? 1 : 0));
+  }
+
+  // Indices grouped into pitch lines, keeper at the back (near the stands), attack toward the camera.
+  formationLines(list) {
+    const gk = [], def = [], mid = [], fwd = [], free = [];
+    let tagged = false;
+    list.forEach((a, i) => {
+      const { role } = this.squadOf(a);
+      if (role === "gk") gk.push(i);
+      else if (role === "def") { tagged = true; def.push(i); }
+      else if (role === "mid") { tagged = true; mid.push(i); }
+      else if (role === "fwd") { tagged = true; fwd.push(i); }
+      else free.push(i);
+    });
+    if (tagged) {
+      // Untagged outfield players fill midfield so explicit roles still win their line.
+      return [gk, def, mid.concat(free), fwd].filter((line) => line.length);
+    }
+    const shape = this.fieldShape(free.length);
+    let o = 0;
+    const auto = shape.map((count) => {
+      const slice = free.slice(o, o + count);
+      o += count;
+      return slice;
+    });
+    return [gk, ...auto].filter((line) => line.length);
   }
 
   // captain: the agent you're looking at. bench: its terminals are in the shown tab.
@@ -73,48 +120,52 @@ export default class Stadium extends View {
     const kit = gk ? GK : K;
     const working = a.status === "working", blocked = a.status === "blocked", done = a.status === "done";
     const pose = done ? "cheer" : working ? "run" : "stand";
-    const drift = working ? Math.sin(this.step * 0.9 + i * 1.7) * Math.min(60, slot.w * 0.3) : 0;
+    const s = slot.scale ?? 1;
+    const bw = 64 * s, bh = 96 * s, box = Math.max(72, 120 * s);
+    // Stay inside the slot so a jog never walks off the pitch edge.
+    const maxDrift = Math.max(0, Math.min(48 * s, slot.w * 0.28, (slot.w - box) / 2));
+    const drift = working ? Math.sin(this.step * 0.9 + i * 1.7) * maxDrift : 0;
 
-    const sprite = div().relative().w(64).h(96)
-      .child(image(`${ASSET}/${pose}${gk ? "-gk" : ""}.svg`).w(64).h(96))
-      .when(Boolean(kit.numberBg), (el) => el.child(div().absolute().left(25).top(31).w(14).h(13).rounded(2).bg(kit.numberBg ?? "#0000")))
-      .child(div().absolute().left(0).top(30).w(64).text_center().text_size(12).font_weight(800).text_color(kit.number).child(String(num)))
+    const sprite = div().relative().w(bw).h(bh)
+      .child(image(`${ASSET}/${pose}${gk ? "-gk" : ""}.svg`).w(bw).h(bh))
+      .when(Boolean(kit.numberBg), (el) => el.child(div().absolute().left(25 * s).top(31 * s).w(14 * s).h(13 * s).rounded(2).bg(kit.numberBg ?? "#0000")))
+      .child(div().absolute().left(0).top(30 * s).w(bw).text_center().text_size(Math.max(9, 12 * s)).font_weight(800).text_color(kit.number).child(String(num)))
       // Captain's armband on the left sleeve.
-      .when(captain, (el) => el.child(div().absolute().left(13).top(33).w(11).h(9).rounded(2).bg(C.accent).border(1).border_color("#000000AA")
-        .flex().items_center().justify_center().text_size(7).font_weight(900).text_color("#000").child("C")));
+      .when(captain, (el) => el.child(div().absolute().left(13 * s).top(33 * s).w(11 * s).h(9 * s).rounded(2).bg(C.accent).border(1).border_color("#000000AA")
+        .flex().items_center().justify_center().text_size(Math.max(6, 7 * s)).font_weight(900).text_color("#000").child("C")));
     if (working) {
-      sprite.child(div().absolute().left(46).top(78).child(image(`${ASSET}/ball.svg`).size(14))
-        .loop("top", { from: 76, to: 82, period: 420 }));
+      sprite.child(div().absolute().left(46 * s).top(78 * s).child(image(`${ASSET}/ball.svg`).size(14 * s))
+        .loop("top", { from: 76 * s, to: 82 * s, period: 420 }));
     }
     const body = div().id(`body-${a.address}`).relative().child(sprite);
-    if (working) body.loop("top", { from: 0, to: 4, period: 460 });
-    if (blocked) body.loop("top", { from: 0, to: -16, period: 820 });
-    if (done) body.loop("top", { from: 0, to: -7, period: 640 });
-    if (!working && !blocked && !done) body.loop("top", { from: 0, to: 2, period: 2600 });
+    if (working) body.loop("top", { from: 0, to: 4 * s, period: 460 });
+    if (blocked) body.loop("top", { from: 0, to: -16 * s, period: 820 });
+    if (done) body.loop("top", { from: 0, to: -7 * s, period: 640 });
+    if (!working && !blocked && !done) body.loop("top", { from: 0, to: 2 * s, period: 2600 });
 
-    const tag = div().mt(2).px(9).py(1).rounded(8).text_size(12).font_weight(800)
+    const tag = div().mt(2 * s).px(Math.max(6, 9 * s)).py(1).rounded(8).text_size(Math.max(10, 12 * s)).font_weight(800)
       .bg(captain || bench ? C.primary : "#000000A0")
       .text_color(captain || bench ? ON_PRIMARY : "#FFFFFF")
       .when(captain, (el) => el.border(2).border_color(C.accent))
       .child(name);
 
-    return v_flex().id(`player-${a.address}`).absolute().left(slot.x + drift).top(slot.y).w(120).items_center().cursor_pointer()
+    return v_flex().id(`player-${a.address}`).absolute().left(slot.x + drift).top(slot.y).w(box).items_center().cursor_pointer()
       .opacity(captain || bench ? 1 : 0.72)
       .transition("left", { duration: 3800, easing: "ease-in-out" })
       .on_click(() => run("agent.focus", { terminal: a.address }))
       .when(captain, (el) => el
-        .child(image(`${ASSET}/spotlight.svg`).absolute().left(-10).top(-120).w(140).h(220))
-        .child(div().absolute().top(-50).text_size(16).font_weight(900).text_color(C.accent).child("▼")
-          .loop("top", { from: -54, to: -44, period: 700 })))
-      .when(bench && !captain, (el) => el.child(div().absolute().top(84).left(30).w(60).h(14).rounded(30).border(2).border_color(C.primary + "AA")))
-      .when(blocked, (el) => el.child(h_flex().absolute().top(-30).gap(6).items_center().px(10).py(4).rounded(10)
-        .bg("#FFF8E1").border(2).border_color("#D49A00").text_size(12).font_weight(700).text_color("#5A4200")
+        .child(image(`${ASSET}/spotlight.svg`).absolute().left(-10 * s).top(-120 * s).w(140 * s).h(220 * s))
+        .child(div().absolute().top(-50 * s).text_size(Math.max(12, 16 * s)).font_weight(900).text_color(C.accent).child("▼")
+          .loop("top", { from: -54 * s, to: -44 * s, period: 700 })))
+      .when(bench && !captain, (el) => el.child(div().absolute().top(84 * s).left(box / 2 - 30 * s).w(60 * s).h(14 * s).rounded(30).border(2).border_color(C.primary + "AA")))
+      .when(blocked, (el) => el.child(h_flex().absolute().top(-30 * s).gap(6).items_center().px(10).py(4).rounded(10)
+        .bg("#FFF8E1").border(2).border_color("#D49A00").text_size(Math.max(10, 12 * s)).font_weight(700).text_color("#5A4200")
         .child(div().w(9).h(12).rounded(1).bg("#F6C700"))
         .child(div().child(`${W.blocked} · ${a.program?.name ?? ""}`))))
-      .when(done && !blocked, (el) => el.child(div().absolute().top(captain ? -74 : -34).text_size(17).font_weight(900).text_color(C.accent).child(W.shout)))
+      .when(done && !blocked, (el) => el.child(div().absolute().top((captain ? -74 : -34) * s).text_size(Math.max(12, 17 * s)).font_weight(900).text_color(C.accent).child(W.shout)))
       .child(body)
       .child(tag)
-      .child(div().max_w(118).truncate().text_size(10.5).text_color("#FFFFFFC0").child(`${a.space_name} · ${a.tab_name ?? ""}`));
+      .child(div().max_w(box - 2).truncate().text_size(Math.max(9, 10.5 * s)).text_color("#FFFFFFC0").child(`${a.space_name} · ${a.tab_name ?? ""}`));
   }
 
   // The block's size in this mod's px. on_size_change reports window pixels, and the app zoom
@@ -149,24 +200,39 @@ export default class Stadium extends View {
     ];
   }
 
-  // Where each player stands: rows of up to six across the grass, right of the scoreboard.
-  slots(n, g) {
+  // Formation slots on the grass, right of the scoreboard. Scales down when a line is crowded
+  // so players stay inside the pitch instead of spilling past the right edge.
+  slots(list, g) {
     const { width } = this.size;
     const left = 250, right = 40;
-    // A player with its name and tab is about 145px tall; rows that don't fit merge into fewer, wider ones.
-    // On the grass when there's room, else as low as fits.
-    const y0 = Math.max(g.compact ? 8 : 60, Math.min(g.grass - 20, g.bottom - 150));
-    const space = g.bottom - y0 - 145;
-    let rows = n > 12 ? 3 : n > 6 ? 2 : 1;
-    while (rows > 1 && space / (rows - 1) < 60) rows--;
-    const cols = Math.max(1, Math.ceil(n / rows));
-    const w = Math.max(100, (width - left - right) / cols);
-    const rowH = rows > 1 ? Math.min(150, space / (rows - 1)) : 0;
-    return Array.from({ length: n }, (_, i) => {
-      const r = Math.floor(i / cols), c = i % cols;
-      const stagger = r % 2 ? w * 0.35 : 0;
-      return { x: left + c * w + (w - 120) / 2 + stagger, y: y0 + r * rowH, w };
+    const usable = Math.max(120, width - left - right);
+    const lines = this.formationLines(list);
+    const maxCols = Math.max(1, ...lines.map((line) => line.length));
+    // A player block is ~120px wide at full size; shrink before anyone crosses the touchline.
+    let scale = Math.min(1, usable / (maxCols * 110));
+    const boxH = 145 * scale;
+    const y0 = Math.max(g.compact ? 8 : 50, Math.min(g.grass - 20, g.bottom - boxH));
+    const space = g.bottom - y0 - boxH;
+    // If the formation is too tall for the block, tighten row gaps and shrink a little more.
+    if (lines.length > 1 && space / (lines.length - 1) < 55 * scale) {
+      scale = Math.min(scale, space / ((lines.length - 1) * 55));
+    }
+    scale = Math.max(0.55, scale);
+    const rowH = lines.length > 1 ? Math.min(150 * scale, Math.max(55 * scale, space / (lines.length - 1))) : 0;
+    const out = new Array(list.length);
+    lines.forEach((line, r) => {
+      const n = line.length;
+      const slotW = usable / n;
+      const box = Math.max(72, 120 * scale);
+      // Mild stagger on alternate lines, clamped so the last player still fits.
+      const stagger = r % 2 ? Math.min(slotW * 0.2, Math.max(0, (usable - n * box) / 2)) : 0;
+      line.forEach((idx, c) => {
+        let x = left + c * slotW + (slotW - box) / 2 + stagger;
+        x = Math.min(Math.max(left, x), width - right - box);
+        out[idx] = { x, y: y0 + r * rowH, w: slotW, scale };
+      });
     });
+    return out;
   }
 
   chip(id, label, active, status, onClick) {
@@ -225,7 +291,7 @@ export default class Stadium extends View {
     const count = (st) => list.filter((a) => a.status === st).length;
     const away = (active?.name ?? "---").replace(/[^\p{L}\p{N}]/gu, "").slice(0, 3).toUpperCase() || "---";
     const g = this.geometry();
-    const slots = this.slots(list.length, g);
+    const slots = this.slots(list, g);
     // Draw the captain last so its spotlight and armband sit above everyone else.
     const order = list.map((a, i) => ({ a, i })).sort((x, y) => (x.a.address === captainAddr) - (y.a.address === captainAddr));
 

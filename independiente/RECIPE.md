@@ -14,7 +14,8 @@ window in Independiente colors, **CAI-Stadium** puts the whole squad on a pitch.
 1. **The pitch**: a night stadium at Estadio Libertadores de America, floodlights, stands, roof and seats in
    Independiente colors, fans and flags in the kit. Top left the stadium name, a scoreboard
    (CAI goals-VAR against the shown space), top right the counts. One player per agent,
-   with its shirt number, name, space and tab.
+   with its shirt number, name, space and tab, stood in a formation (keeper at the back, attack
+   toward the camera); crowded lines shrink to stay on the pitch.
 2. **The bar**: every space, then the shown space's tabs, as chips you click; the player you're
    looking at; the keys.
 3. **The bench**: the shown tab's terminals, each header naming its player and status.
@@ -52,10 +53,10 @@ herdr-app do layout.switch '{"name":"CAI-Stadium"}'
 
 ## What it cannot do yet
 
-- Players stand in up to three rows of up to six; with many agents in a narrow window the last
-  ones can pass the right edge.
 - On a very short pitch block the stadium name and counts move into the scoreboard.
 
 ## Squad
 
 current squad and shirt numbers (read 2026-11-11), from Wikipedia 'Club Atlético Independiente' (https://en.wikipedia.org/w/index.php?oldid=1384844882). Edit `squad` in `teams/independiente.json` and run `./install.sh --update independiente`.
+Optional third item on a squad entry: `gk`, `def`, `mid`, or `fwd` (formation line; only `gk`
+changes the kit). Untagged outfield players are placed automatically.

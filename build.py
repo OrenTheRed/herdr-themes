@@ -16,6 +16,7 @@ Usage: python3 build.py [team-id ...]   (no ids: every team)
 """
 import json
 import random
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -47,22 +48,138 @@ WORDS = {
         "onBall": "on the ball", "spaces": "MATCHES", "space": "match", "tab": "half", "player": "player",
         "sectionBlocked": "At VAR", "sectionDone": "Goals", "sectionWorking": "Attacking", "sectionIdle": "On the bench",
     },
+    "he": {
+        "working": "תוקף", "blocked": "VAR", "done": "גול", "idle": "על הספסל",
+        "onPitch": "שחקנים על המגרש", "workingCount": "תוקפים",
+        "blockedCount": "ב-VAR", "doneCount": "גולים", "bench": "הספסל",
+        "matchday": "מחזור", "shout": "גווול!",
+        "onBall": "עם הכדור", "spaces": "משחקים", "space": "משחק", "tab": "מחצית", "player": "שחקן",
+        "sectionBlocked": "ב-VAR", "sectionDone": "גולים", "sectionWorking": "תוקפים", "sectionIdle": "על הספסל",
+    },
 }
 
 SKIN = "#C68B59"
 HAIR = "#2B1D14"
+KIT_STYLES = ("plain", "stripes", "hoops", "halves", "sash")
+SQUAD_ROLES = ("gk", "def", "mid", "fwd")
+COLOR_KEYS = ("primary", "light", "accent", "dark", "surface", "selection", "foreground")
+KIT_KEYS = ("style", "a", "b", "collar", "shorts", "number", "numberBg")
+HEX = re.compile(r"^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$")
+REQUIRED = (
+    "id", "code", "name", "short", "listTitle", "stadium", "squadNote",
+    "squad", "colors", "kit", "gkKit", "crowd", "words",
+)
+
+
+# ---------- validation ----------
+
+def _hex(value, label, errors):
+    if value is not None and not (isinstance(value, str) and HEX.match(value)):
+        errors.append(f"{label} must be #RRGGBB or #RRGGBBAA (got {value!r})")
+
+
+def _kit(kit, label, errors):
+    if not isinstance(kit, dict):
+        errors.append(f"{label} must be an object")
+        return
+    for key in KIT_KEYS:
+        if key not in kit:
+            errors.append(f"{label} missing {key}")
+    style = kit.get("style")
+    if style not in KIT_STYLES:
+        errors.append(f"{label}.style must be one of {', '.join(KIT_STYLES)} (got {style!r})")
+    for key in ("a", "b", "collar", "shorts", "number"):
+        if key in kit:
+            _hex(kit[key], f"{label}.{key}", errors)
+    if "numberBg" in kit and kit["numberBg"] is not None:
+        _hex(kit["numberBg"], f"{label}.numberBg", errors)
+
+
+def validate_team(team, path):
+    """Return a list of human-readable problems with a team file (empty if ok)."""
+    errors = []
+    if not isinstance(team, dict):
+        return [f"{path}: team must be a JSON object"]
+    for key in REQUIRED:
+        if key not in team:
+            errors.append(f"missing {key}")
+    tid = team.get("id")
+    if tid is not None and tid != path.stem:
+        errors.append(f"id {tid!r} must match file name {path.stem!r}")
+    if team.get("words") not in WORDS:
+        errors.append(f"words must be one of {', '.join(sorted(WORDS))} (got {team.get('words')!r})")
+    colors = team.get("colors")
+    if isinstance(colors, dict):
+        for key in COLOR_KEYS:
+            if key not in colors:
+                errors.append(f"colors missing {key}")
+            else:
+                _hex(colors[key], f"colors.{key}", errors)
+    else:
+        errors.append("colors must be an object")
+    _kit(team.get("kit"), "kit", errors)
+    _kit(team.get("gkKit"), "gkKit", errors)
+    crowd = team.get("crowd")
+    if not isinstance(crowd, list) or not crowd:
+        errors.append("crowd must be a non-empty list of colors")
+    else:
+        for i, c in enumerate(crowd):
+            _hex(c, f"crowd[{i}]", errors)
+    squad = team.get("squad")
+    if not isinstance(squad, list) or not squad:
+        errors.append("squad must be a non-empty list")
+    else:
+        numbers = []
+        for i, entry in enumerate(squad):
+            if not isinstance(entry, list) or len(entry) < 2 or len(entry) > 3:
+                errors.append(f"squad[{i}] must be [name, number] or [name, number, role]")
+                continue
+            name, num, *rest = entry
+            if not isinstance(name, str) or not name.strip():
+                errors.append(f"squad[{i}] name must be a non-empty string")
+            if not isinstance(num, int) or isinstance(num, bool) or num < 0:
+                errors.append(f"squad[{i}] number must be a non-negative integer")
+            else:
+                numbers.append(num)
+            if rest and rest[0] not in SQUAD_ROLES:
+                errors.append(f"squad[{i}] role must be one of {', '.join(SQUAD_ROLES)} (got {rest[0]!r})")
+        if len(numbers) != len(set(numbers)):
+            errors.append("squad shirt numbers must be unique")
+        if not any(isinstance(e, list) and len(e) == 3 and e[2] == "gk" for e in squad):
+            errors.append("squad needs at least one keeper (third item \"gk\")")
+    for key in ("id", "code", "name", "short", "listTitle", "stadium", "squadNote"):
+        if key in team and (not isinstance(team[key], str) or not team[key].strip()):
+            errors.append(f"{key} must be a non-empty string")
+    if "folder" in team and (not isinstance(team["folder"], str) or not team["folder"].strip()):
+        errors.append("folder must be a non-empty string when set")
+    return [f"{path.name}: {e}" for e in errors]
 
 
 # ---------- art ----------
 
 def kit_fill(k, x, y, w, h, clip_id):
-    """A rectangle of the kit: vertical stripes or plain, clipped to clip_id."""
+    """Kit pattern inside clip_id: plain, stripes, hoops, halves, or sash."""
     parts = [f'<g clip-path="url(#{clip_id})"><rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{k["b"]}"/>']
-    if k["style"] == "stripes":
+    style = k["style"]
+    if style == "stripes":
         n = 5
         sw = w / n
         for i in range(0, n, 2):
             parts.append(f'<rect x="{x + i * sw:.2f}" y="{y}" width="{sw:.2f}" height="{h}" fill="{k["a"]}"/>')
+    elif style == "hoops":
+        n = 5
+        sh = h / n
+        for i in range(0, n, 2):
+            parts.append(f'<rect x="{x}" y="{y + i * sh:.2f}" width="{w}" height="{sh:.2f}" fill="{k["a"]}"/>')
+    elif style == "halves":
+        parts.append(f'<rect x="{x}" y="{y}" width="{w / 2:.2f}" height="{h}" fill="{k["a"]}"/>')
+    elif style == "sash":
+        parts.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{k["a"]}"/>')
+        band = max(w, h) * 0.22
+        parts.append(
+            f'<polygon points="{x},{y + h * 0.22:.2f} {x + band:.2f},{y} '
+            f'{x + w},{y + h * 0.78:.2f} {x + w - band:.2f},{y + h}" fill="{k["b"]}"/>'
+        )
     else:
         parts.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{k["a"]}"/>')
     parts.append("</g>")
@@ -383,7 +500,8 @@ window in {team['name']} colors, **{code}-Stadium** puts the whole squad on a pi
 1. **The pitch**: a night stadium at {team['stadium']}, floodlights, stands, roof and seats in
    {team['name']} colors, fans and flags in the kit. Top left the stadium name, a scoreboard
    ({team['short']} goals-VAR against the shown space), top right the counts. One player per agent,
-   with its shirt number, name, space and tab.
+   with its shirt number, name, space and tab, stood in a formation (keeper at the back, attack
+   toward the camera); crowded lines shrink to stay on the pitch.
 2. **The bar**: every space, then the shown space's tabs, as chips you click; the player you're
    looking at; the keys.
 3. **The bench**: the shown tab's terminals, each header naming its player and status.
@@ -421,13 +539,13 @@ herdr-app do layout.switch '{{"name":"{code}-Stadium"}}'
 
 ## What it cannot do yet
 
-- Players stand in up to three rows of up to six; with many agents in a narrow window the last
-  ones can pass the right edge.
 - On a very short pitch block the stadium name and counts move into the scoreboard.
 
 ## Squad
 
 {team['squadNote']}. Edit `squad` in `teams/{tid}.json` and run `./install.sh --update {tid}`.
+Optional third item on a squad entry: `gk`, `def`, `mid`, or `fwd` (formation line; only `gk`
+changes the kit). Untagged outfield players are placed automatically.
 """
 
 
@@ -470,10 +588,31 @@ def build(team):
 
 def main():
     wanted = set(sys.argv[1:])
-    teams = [json.loads(p.read_text()) for p in sorted((ROOT / "teams").glob("*.json"))]
-    for t in teams:
-        if wanted and t["id"] not in wanted:
+    paths = sorted((ROOT / "teams").glob("*.json"))
+    loaded = []
+    errors = []
+    for p in paths:
+        try:
+            team = json.loads(p.read_text())
+        except json.JSONDecodeError as e:
+            errors.append(f"{p.name}: invalid JSON ({e})")
             continue
+        if wanted and team.get("id") not in wanted and p.stem not in wanted:
+            continue
+        errors.extend(validate_team(team, p))
+        loaded.append(team)
+    codes = [t.get("code") for t in loaded]
+    if len(codes) != len(set(codes)):
+        errors.append("team code values must be unique among the teams being built")
+    folders = [t.get("folder", t.get("id")) for t in loaded]
+    if len(folders) != len(set(folders)):
+        errors.append("team folder values must be unique among the teams being built")
+    if errors:
+        print("team validation failed:", file=sys.stderr)
+        for e in errors:
+            print(f"  {e}", file=sys.stderr)
+        sys.exit(1)
+    for t in loaded:
         print("built", build(t).relative_to(ROOT))
 
 
