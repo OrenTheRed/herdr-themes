@@ -7,8 +7,7 @@
 #   HC_SESSION=herdr-demo HERDR_APP_HOME="$T/home" HERDR_APP_ID=herdr-demo /Applications/Herdr.app/Contents/MacOS/Herdr &
 #   HC_SESSION=herdr-demo tools/demo-scene.sh "$T"
 #   HERDR_APP_HOME="$T/home" ./install.sh
-#   HERDR_APP_HOME="$T/home" herdr-app do layout.switch '{"name":"albiceleste-Stadium"}'
-#   HERDR_APP_HOME="$T/home" herdr-app shot preview.png
+#   HERDR_APP_HOME="$T/home" tools/screenshots.sh
 #   HC_SESSION=herdr-demo tools/demo-scene.sh --stop
 set -eu
 : "${HC_SESSION:?set HC_SESSION to a throwaway core session, e.g. herdr-demo}"

@@ -29,6 +29,7 @@ WORDS = {
         "blockedCount": "en el VAR", "doneCount": "goles", "bench": "EL BANCO",
         "matchday": "FECHA", "shout": "GOOOL!",
         "onBall": "con la pelota", "spaces": "PARTIDOS", "space": "partido", "tab": "tiempo", "player": "jugador",
+        "sectionBlocked": "En el VAR", "sectionDone": "Goles", "sectionWorking": "Atacando", "sectionIdle": "En el banco",
     },
     "it": {
         "working": "in attacco", "blocked": "VAR", "done": "GOL", "idle": "in panchina",
@@ -36,6 +37,7 @@ WORDS = {
         "blockedCount": "al VAR", "doneCount": "gol", "bench": "LA PANCHINA",
         "matchday": "GIORNATA", "shout": "GOOOL!",
         "onBall": "in possesso", "spaces": "PARTITE", "space": "partita", "tab": "tempo", "player": "giocatore",
+        "sectionBlocked": "Al VAR", "sectionDone": "Gol", "sectionWorking": "In attacco", "sectionIdle": "In panchina",
     },
     "en": {
         "working": "attacking", "blocked": "VAR", "done": "GOAL", "idle": "on the bench",
@@ -43,6 +45,7 @@ WORDS = {
         "blockedCount": "at VAR", "doneCount": "goals", "bench": "THE BENCH",
         "matchday": "MATCHDAY", "shout": "GOOAAL!",
         "onBall": "on the ball", "spaces": "MATCHES", "space": "match", "tab": "half", "player": "player",
+        "sectionBlocked": "At VAR", "sectionDone": "Goals", "sectionWorking": "Attacking", "sectionIdle": "On the bench",
     },
 }
 
