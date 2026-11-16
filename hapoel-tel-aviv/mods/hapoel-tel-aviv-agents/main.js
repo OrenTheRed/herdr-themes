@@ -64,8 +64,9 @@ const SORTS = [
   { id: "grouped", label: "Grouped by space", icon: "layers" },
 ];
 const sortOf = () => SORTS.find((s) => s.id === shared("agents.sort")) ?? SORTS[0];
-const SECTION = { 4: "Needs you", 3: "Done", 2: "Working", 1: "Idle" };
+const SECTION = { 4: W.sectionBlocked, 3: W.sectionDone, 2: W.sectionWorking, 1: W.sectionIdle };
 const SECTION_STATUS = { 4: "blocked", 3: "done", 2: "working" };
+const storeKey = (k) => `${MOD}.${k}`;
 
 function duration(ms) {
   const m = Math.floor(ms / 60000);
@@ -100,12 +101,13 @@ export default class Agents extends View {
     if (props()?.sortMenu) return;
     this.folded = new Set();
     // Each agent's last state and when it changed (ms), kept across restarts.
-    this.changed = JSON.parse(localStorage.getItem("changed") ?? "{}");
-    this.pendingPins = JSON.parse(localStorage.getItem("pins") ?? "[]");
-    if (!this.pendingPins.length) localStorage.removeItem("pins");
+    // Keys are scoped to this mod so teams (and classic vs stadium) do not collide.
+    this.changed = JSON.parse(localStorage.getItem(storeKey("changed")) ?? "{}");
+    this.pendingPins = JSON.parse(localStorage.getItem(storeKey("pins")) ?? "[]");
+    if (!this.pendingPins.length) localStorage.removeItem(storeKey("pins"));
     this.migratingPins = new Set();
     // Which player each agent is, kept across restarts.
-    this.players = JSON.parse(localStorage.getItem("players") ?? "{}");
+    this.players = JSON.parse(localStorage.getItem(storeKey("players")) ?? "{}");
     cx.timer.every(30000, (cx) => cx.notify());
   }
 
@@ -127,7 +129,7 @@ export default class Agents extends View {
       taken.add(i);
       dirty = true;
     }
-    if (dirty) localStorage.setItem("players", JSON.stringify(this.players));
+    if (dirty) localStorage.setItem(storeKey("players"), JSON.stringify(this.players));
   }
 
   player(a) {
@@ -148,7 +150,7 @@ export default class Agents extends View {
     // Gone and old: the list alone is empty right after a start.
     const listed = new Set(list.map((a) => a.address));
     for (const [k, c] of Object.entries(this.changed)) if (!listed.has(k) && now - c.at > 30 * 86400000) delete this.changed[k];
-    localStorage.setItem("changed", JSON.stringify(this.changed));
+    localStorage.setItem(storeKey("changed"), JSON.stringify(this.changed));
   }
 
   // Keep offline pins until their terminal returns, and keep each pending until
@@ -167,8 +169,8 @@ export default class Agents extends View {
     });
     if (pending.length === this.pendingPins.length) return;
     this.pendingPins = pending;
-    if (pending.length) localStorage.setItem("pins", JSON.stringify(pending));
-    else localStorage.removeItem("pins");
+    if (pending.length) localStorage.setItem(storeKey("pins"), JSON.stringify(pending));
+    else localStorage.removeItem(storeKey("pins"));
   }
 
   since(a) {
@@ -247,7 +249,7 @@ export default class Agents extends View {
       .child(this.status(t, { status: st }, compact));
   }
 
-  // compact: a ! for blocked where a header already says "Needs you".
+  // compact: a ! for blocked where a header already shows the blocked section.
   status(t, a, compact = false) {
     const color = t[a.status] ?? t.dim;
     // Working: the ball rolls up and down a little pitch, bouncing (on the rail, it only bounces).

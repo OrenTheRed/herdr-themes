@@ -28,7 +28,8 @@ export default class Stadium extends View {
   init(_props, cx) {
     this.step = 0;
     this.raw = { width: 1400, height: 400 };
-    this.players = JSON.parse(localStorage.getItem("players") ?? "{}");
+    // Scoped to this mod so teams (and classic vs stadium) do not collide.
+    this.players = JSON.parse(localStorage.getItem(PLAYERS_KEY) ?? "{}");
     // Publish what the pitch remembers, outside render (setShared re-renders every mod).
     if (!props()?.role) cx.spawn(async () => setShared(PLAYERS_KEY, { ...this.players }));
     // The timer only moves where running players are headed; .transition does the moving.
@@ -54,7 +55,7 @@ export default class Stadium extends View {
       dirty = true;
     }
     if (!dirty) return;
-    localStorage.setItem("players", JSON.stringify(this.players));
+    localStorage.setItem(PLAYERS_KEY, JSON.stringify(this.players));
     const snapshot = { ...this.players };
     cx.spawn(async () => setShared(PLAYERS_KEY, snapshot));
   }

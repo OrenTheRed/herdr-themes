@@ -58,13 +58,14 @@ src/stadium/main.js    the stadium mod: pitch, players, scoreboard, navigation b
 build.py               writes each team folder: layouts, themes, mods, generated SVG art, RECIPE.md
 install.sh             build, then copy into the app home
 tools/demo-scene.sh    the made-up demo scene the screenshots use
+tools/screenshots.sh   switch layouts and write preview.png / preview-classic.png per team
 ```
 
 All art (jerseys, players, ball, spotlight, stadium) is SVG generated from the team file. To add a team, copy a file in `teams/`, change it, and run `./install.sh <new-id>`. Mark a keeper with `"gk"` as the third item of their squad entry.
 
 ## About the demo
 
-The screenshots show a made-up scene of nine fake agents in three spaces (website, api, docs), run in a separate, empty Herdr app home and core session: four working, one needs you, two done, two idle. No real work, people or data appear in them. `tools/demo-scene.sh` explains how to run it.
+The screenshots show a made-up scene of nine fake agents in three spaces (website, api, docs), run in a separate, empty Herdr app home and core session: four working, one needs you, two done, two idle. No real work, people or data appear in them. `tools/demo-scene.sh` starts the scene; `tools/screenshots.sh` captures each team's previews into its folder.
 
 ## Squads
 
