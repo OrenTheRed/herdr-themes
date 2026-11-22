@@ -88,7 +88,7 @@ export default class Stadium extends View {
       .when(Boolean(kit.numberBg), (el) => el.child(div().absolute().left(25).top(31).w(14).h(13).rounded(2).bg(kit.numberBg ?? "#0000")))
       .child(div().absolute().left(0).top(30).w(64).text_center().text_size(12).font_weight(800).text_color(kit.number).child(String(num)))
       // The sponsor on the shirt, under the number: which agent this player is.
-      .when(Boolean(a.program?.icon), (el) => el.child(div().absolute().left(26).top(43).child(sponsor(a.program, 12))))
+      .when(Boolean(a.program?.icon), (el) => el.child(div().absolute().left(26).top(45).child(sponsor(a.program, 12))))
       // Captain's armband on the left sleeve.
       .when(captain, (el) => el.child(div().absolute().left(13).top(33).w(11).h(9).rounded(2).bg(C.accent).border(1).border_color("#000000AA")
         .flex().items_center().justify_center().text_size(7).font_weight(900).text_color("#000").child("C")));
@@ -164,25 +164,27 @@ export default class Stadium extends View {
   // The agents on the pitch as sponsors on the art's ad boards (160 apart, 148x16 at y 208):
   // one board per agent with its player count, most players first. In a short block the players
   // stand in front of the boards (or the boards are too small to read), so the same signs go in
-  // a row under the status counts instead.
+  // a row under the status counts instead. Returns { art: boards on the art, row: that row or null }.
   boards(list, g, slots) {
-    if (g.compact) return [];
+    if (g.compact) return { art: [], row: null };
     const s = g.scale;
     const onArt = 16 * s >= 12 && (slots[0]?.y ?? Infinity) >= g.top + 224 * s;
     const h = onArt ? 16 * s : 18;
     const by = new Map();
     for (const a of list) {
-      const k = a.program?.key ?? "agent";
+      // Every program not in programs.json has the key "program", so its name tells them apart.
+      const k = a.program ? (a.program.key === "program" ? `program:${a.program.name}` : a.program.key) : "agent";
       by.set(k, { p: a.program, n: (by.get(k)?.n ?? 0) + 1 });
     }
+    // Signs can shrink: a long name gets cut off instead of running past its board.
     const signs = [...by.values()].sort((x, y) => y.n - x.n).slice(0, 8).map(({ p, n }) =>
-      h_flex().flex_none().h(h).rounded(2).px(6).gap(5).items_center().justify_center().bg("#F5F5F0").text_color("#111111")
-        .text_size(Math.min(11, h - 4)).font_weight(800)
+      h_flex().flex_shrink_1().min_w(0).overflow_hidden().h(h).rounded(2).px(6).gap(5).items_center().justify_center()
+        .bg("#F5F5F0").text_color("#111111").text_size(Math.min(11, h - 4)).font_weight(800)
         .when(Boolean(p?.icon), (el) => el.child(sponsor(p, Math.round(h - 3))))
-        .child(div().truncate().child(`${p?.name ?? "Agent"} ×${n}`)));
+        .child(div().flex_shrink_1().min_w(0).truncate().child(`${p?.name ?? W.agent} ×${n}`)));
     // The first two boards stay clear of the scoreboard; the art has ten.
-    if (onArt) return signs.map((el, i) => el.absolute().left(((i + 2) * 160 + 6) * s).top(g.top + 208 * s).w(148 * s));
-    return [h_flex().absolute().right(28).top(62).gap(8).children(signs)];
+    if (onArt) return { art: signs.map((el, i) => el.absolute().left(((i + 2) * 160 + 6) * s).top(g.top + 208 * s).w(148 * s)), row: null };
+    return { art: [], row: h_flex().w_full().justify_end().gap(8).children(signs) };
   }
 
   // Where each player stands: rows of up to six across the grass, right of the scoreboard.
@@ -191,7 +193,8 @@ export default class Stadium extends View {
     const left = 250, right = 40;
     // A player with its name and tab is about 145px tall; rows that don't fit merge into fewer, wider ones.
     // On the grass when there's room, else as low as fits.
-    const y0 = Math.max(g.compact ? 8 : 60, Math.min(g.grass - 20, g.bottom - 150));
+    // Not compact: start under the top bar (title, counts, and the board row when it shows).
+    const y0 = Math.max(g.compact ? 8 : 86, Math.min(g.grass - 20, g.bottom - 150));
     const space = g.bottom - y0 - 145;
     let rows = n > 12 ? 3 : n > 6 ? 2 : 1;
     while (rows > 1 && space / (rows - 1) < 60) rows--;
@@ -264,16 +267,14 @@ export default class Stadium extends View {
     const slots = this.slots(list.length, g);
     // Draw the captain last so its spotlight and armband sit above everyone else.
     const order = list.map((a, i) => ({ a, i })).sort((x, y) => (x.a.address === captainAddr) - (y.a.address === captainAddr));
+    const boards = this.boards(list, g, slots);
 
     return div().id("root").relative().size_full().overflow_hidden().bg(C.dark)
       // The reported size is in window pixels; this mod's px are scaled by the app zoom, so divide it out.
       .on_size_change((size, cx) => { this.raw = size; cx.notify(); })
       .child(image(`${ASSET}/pitch.svg`).absolute().left(0).top(g.top).w(g.w).h(g.h))
       .children(this.moreGrass(g))
-      .children(this.boards(list, g, slots))
-      .when(!g.compact, (el) => el.child(v_flex().absolute().left(20).top(30).gap(2).px(10).py(6).rounded(8).bg("#05070DB3").text_color("#FFFFFF")
-        .child(div().text_size(26).font_weight(800).child(STADIUM))
-        .child(div().text_size(12.5).text_color("#FFFFFFB0").child(`${list.length} ${W.onPitch}`))))
+      .children(boards.art)
       .child(v_flex().absolute().left(g.compact ? 12 : 28).top(g.compact ? 10 : Math.max(96, g.grass - 4)).w(g.compact ? 220 : 190).px(14).py(10).gap(4).rounded(6)
         .bg("#05070DE6").border(2).border_color(C.primary)
         .when(g.compact, (el) => el.child(div().text_size(12).font_weight(800).text_color("#FFFFFF").truncate().child(STADIUM)))
@@ -286,9 +287,17 @@ export default class Stadium extends View {
           .child(`${count("working")} ${W.workingCount} · ${count("blocked")} ${W.blockedCount} · ${count("done")} ${W.doneCount}`))))
       .children(order.map(({ a, i }) => this.player(a, i, slots[i], a.address === captainAddr,
         a.space === active?.id && a.tab === tab?.id)))
-      .when(!g.compact, (el) => el.child(h_flex().absolute().right(28).top(30).gap(10).text_size(12).font_weight(600)
-        .children([["working", W.workingCount, C.primary], ["blocked", W.blockedCount, "#F6C700"], ["done", W.doneCount, C.accent]]
-          .map(([st, label, col]) => h_flex().gap(6).items_center().px(10).py(4).rounded(10).bg("#000000A0")
-            .child(div().size(7).rounded(4).bg(col)).child(div().text_color("#FFFFFF").child(`${count(st)} ${label}`))))));
+      // The top bar: the title on the left; the status counts and the board row on the right,
+      // in the space the title leaves, so the row shrinks instead of running over the title.
+      .when(!g.compact, (el) => el.child(h_flex().absolute().left(20).right(28).top(30).gap(16).items_start()
+        .child(v_flex().flex_none().gap(2).px(10).py(6).rounded(8).bg("#05070DB3").text_color("#FFFFFF")
+          .child(div().text_size(26).font_weight(800).child(STADIUM))
+          .child(div().text_size(12.5).text_color("#FFFFFFB0").child(`${list.length} ${W.onPitch}`)))
+        .child(v_flex().flex_1().min_w(0).items_end().gap(8)
+          .child(h_flex().gap(10).text_size(12).font_weight(600)
+            .children([["working", W.workingCount, C.primary], ["blocked", W.blockedCount, "#F6C700"], ["done", W.doneCount, C.accent]]
+              .map(([st, label, col]) => h_flex().gap(6).items_center().px(10).py(4).rounded(10).bg("#000000A0")
+                .child(div().size(7).rounded(4).bg(col)).child(div().text_color("#FFFFFF").child(`${count(st)} ${label}`)))))
+          .when(Boolean(boards.row), (bar) => bar.child(boards.row)))));
   }
 }
